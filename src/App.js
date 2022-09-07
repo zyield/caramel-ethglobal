@@ -1,4 +1,4 @@
-import './App.css';
+import './App.css'
 
 import { WagmiConfig, createClient } from 'wagmi'
 import { getDefaultProvider } from 'ethers'
@@ -8,7 +8,7 @@ import Main from './components/Main'
 
 const client = createClient({
   autoConnect: true,
-  provider: getDefaultProvider(),
+  provider: getDefaultProvider()
 })
 
 function App() {

@@ -1,9 +1,15 @@
 import Profile from './Profile'
+import TextArea from './TextArea'
 
 function Main() {
   return (
     <main className="flex justify-center">
-      <Profile />
+      <div className="flex flex-1 flex-col justify-center items-center">
+        <Profile />
+        <div className="mt-20 w-2/5">
+          <TextArea />
+        </div>
+      </div>
     </main>
   )
 }
