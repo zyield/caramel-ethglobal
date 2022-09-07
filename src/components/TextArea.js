@@ -23,7 +23,7 @@ export default function TextArea({ onSubmit }) {
   }
 
   return (
-    <form onSubmit={handleSumit}>
+    <form  onSubmit={handleSumit}>
       <Tab.Group>
         {({ selectedIndex }) => (
           <>
