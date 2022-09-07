@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Tab } from '@headlessui/react'
 import {
   AtSymbolIcon,
@@ -9,9 +10,20 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TextArea() {
+export default function TextArea({ onSubmit }) {
+  const [text, setText] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSumit = async e => {
+    e.preventDefault()
+
+    setLoading(true)
+    await onSubmit(text)
+    setLoading(false)
+  }
+
   return (
-    <form action="#">
+    <form onSubmit={handleSumit}>
       <Tab.Group>
         {({ selectedIndex }) => (
           <>
@@ -82,11 +94,12 @@ export default function TextArea() {
                 <div>
                   <textarea
                     rows={5}
+                    onChange={e => setText(e.target.value)}
                     name="comment"
                     id="comment"
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     placeholder="Add your text..."
-                    defaultValue={''}
+                    value={text}
                   />
                 </div>
               </Tab.Panel>
@@ -104,6 +117,7 @@ export default function TextArea() {
       <div className="mt-2 flex justify-end">
         <button
           type="submit"
+          disabled={loading}
           className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
           Post
