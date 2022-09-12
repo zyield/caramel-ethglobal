@@ -1,35 +1,44 @@
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useEffect, useState } from 'react'
+import { useAccount, useProvider, useEnsName, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
+import { WalletIcon } from '@heroicons/react/24/outline'
+
+import EnsDomain from "./EnsDomain"
+import Main from "./Main"
+import Loading from "./Loading"
 
 function Profile() {
-  const { address, isConnected } = useAccount()
-  const { connect } = useConnect({
-    connector: new InjectedConnector()
-  })
-  const { disconnect } = useDisconnect()
+  const { address, isLoading, isConnected } = useAccount({fetchEns: true})
+  const { data: ensName } = useEnsName({ address })
+
+  const [ensChecked, setEnsChecked] = useState(false)
+
+  if (isLoading) return <Loading />
+
+  if (!address) {
+    return (
+      <div
+        className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <WalletIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <span className="mt-2 block text-sm font-medium text-gray-900">Connect your wallet to continue</span>
+      </div>
+    )
+  }
 
   if (isConnected)
     return (
       <div className="flex flex-col items-center justify-center">
-        <p className="text-xl font-bold underline">Connected to {address}</p>
-        <button
-          className="mt-10 inline-flex justify-center items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          onClick={() => disconnect()}
-        >
-          Disconnect
-        </button>
+        <h2 className="text-xl mb-4">Which domain would you like to use ?</h2>
+        <EnsDomain domain={ensName} checked={ensChecked} setChecked={setEnsChecked} />
+        {ensChecked ? (
+          <div className="mt-8">
+            <Main />
+          </div>
+        ) : (
+          null
+        )}
       </div>
     )
-
-  return (
-    <button
-      type="button"
-      className="inline-flex items-center px-5 py-2 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-      onClick={() => connect()}
-    >
-      Connect Wallet
-    </button>
-  )
 }
 
 export default Profile
