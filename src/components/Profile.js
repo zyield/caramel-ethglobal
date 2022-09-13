@@ -11,6 +11,7 @@ import CID from 'cids'
 import EnsDomain from "./EnsDomain"
 import Main from "./Main"
 import Loading from "./Loading"
+import TransactionModal from './TransactionModal'
 
 import PublicResolverABI from "../abis/PublicResolver.json"
 
@@ -27,7 +28,7 @@ function Profile() {
   const { data, error, write } = useContractWrite(
     {
       mode: "recklesslyUnprepared",
-      addressOrName: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41",
+      addressOrName: process.env.REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS,
       contractInterface: PublicResolverABI,
       functionName: 'setContenthash',
       overrides: {
@@ -35,6 +36,8 @@ function Profile() {
       }
     }
   )
+
+  console.log("data", data)
 
   const updateContentHash = async (value) => {
     const multihash = multiH.fromB58String(value);
@@ -67,6 +70,8 @@ function Profile() {
         ) : (
           null
         )}
+
+      {data && data?.hash && <TransactionModal hash={data?.hash} />}
       </div>
     )
 }

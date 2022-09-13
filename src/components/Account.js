@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { useAccount, useEnsName, useNetwork, useDisconnect } from 'wagmi'
+import { useAccount, useNetwork, useEnsName, useDisconnect } from 'wagmi'
 import { Connect } from './Connect'
 import { truncateAddress } from '../utils'
 
@@ -14,6 +14,8 @@ function Account() {
   } = useAccount({
     fetchEns: true
   })
+
+  const { chain } = useNetwork()
 
   const { data: ensName } = useEnsName({ address })
 
@@ -35,11 +37,11 @@ function Account() {
         <div className="text-gray-800 ml-2">
           {ensName ? ensName : truncateAddress(address)}
         </div>
-        <div className="flex items-center ml-4">
+        <div className="flex items-center ml-2">
           <div>
             <div className="w-2 h-2 bg-green-400 rounded-full"></div>
           </div>
-          <div className="text-gray-800 ml-1 text-xs">{activeChain?.name}</div>
+          <div className="text-gray-800 ml-2 text-xs">{chain?.name === "Chain 1" ? "Mainnet" : chain?.name}</div>
         </div>
       </div>
       <AccountModal
