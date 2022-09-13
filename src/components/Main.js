@@ -5,12 +5,12 @@ import ContentPopup from './ContentPopup'
 import Post from './Post'
 
 import { addFile, uploadHTML, uploadMarkdown, getContentURL } from '../ipfs'
+
 import storage from '../storage'
 import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
 
-
-function Main() {
+function Main({ callback }) {
   const [contentURL, setContentURL] = useState(null)
 
   const onSubmit = async text => {
@@ -18,7 +18,12 @@ function Main() {
     console.log(text)
 
     let mdResponse = await uploadMarkdown(text)
+
     console.log(mdResponse.Hash)
+
+    if (callback) {
+      await callback(mdResponse.Hash)
+    }
 
     let html = await generate([mdResponse.Hash])
     console.log(html)
