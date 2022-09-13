@@ -4,7 +4,9 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletIcon } from '@heroicons/react/24/outline'
 import namehash from "@ensdomains/eth-ens-namehash"
 
-import { CID } from 'multiformats/cid'
+import multiH from 'multihashes'
+import multiC from 'multicodec'
+import CID from 'cids'
 
 import EnsDomain from "./EnsDomain"
 import Main from "./Main"
@@ -21,7 +23,7 @@ function Profile() {
   const toHex = d => d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
 
   console.log("abi", PublicResolverABI)
-    
+
   const { data, error, write } = useContractWrite(
     {
       mode: "recklesslyUnprepared",
@@ -34,13 +36,10 @@ function Profile() {
     }
   )
 
-  const updateContentHash = async (cid) => {
-    let parsedCid = CID.parse(cid)
-    let hash = toHex(parsedCid.multihash.digest)
-
-    let contentHash = "" // TODO fix this
+  const updateContentHash = async (value) => {
+    const multihash = multiH.fromB58String(value);
+    let contentHash = "0x" + multiC.addPrefix("ipfs-ns", multihash).toString('hex')
     let nameHash = namehash.hash(ensName)
-
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash]})
   }
 
