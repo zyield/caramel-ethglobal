@@ -4,17 +4,18 @@ import { WagmiConfig, createClient } from 'wagmi'
 import { getDefaultProvider } from 'ethers'
 
 import Hero from './components/Hero'
-
-const client = createClient({
-  autoConnect: true,
-  provider: getDefaultProvider()
-})
+import Profile from './components/Profile'
+import Account from './components/Account'
 
 function Ens() {
   return (
-    <WagmiConfig client={client}>
-      <Hero />
-    </WagmiConfig>
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <Account />
+      <div className="mx-auto max-w-3xl">
+        <Hero />
+        <Profile />
+      </div>
+    </div>
   )
 }
 
