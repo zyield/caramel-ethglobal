@@ -21,15 +21,15 @@ function Main({ callback }) {
 
     console.log(mdResponse.Hash)
 
-    if (callback) {
-      await callback(mdResponse.Hash)
-    }
-
     let html = await generate([mdResponse.Hash])
     console.log(html)
 
     let response = await uploadHTML(html)
     console.log(response)
+
+    if (callback) {
+      await callback(response.Hash)
+    }
 
     setContentURL(`https://cloudflare-ipfs.com/ipfs/${response.Hash}`)
   }
