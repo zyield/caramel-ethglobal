@@ -2,19 +2,31 @@ import { useState } from 'react'
 import Profile from './Profile'
 import TextArea from './TextArea'
 import ContentPopup from './ContentPopup'
+import Post from './Post'
 
-import { upload, getContentURL } from '../ipfs'
+import { addFile, uploadHTML, uploadMarkdown, getContentURL } from '../ipfs'
+import storage from '../storage'
+import { generate } from '../blog/generator'
+import { convert } from '../blog/converter'
 
 
 function Main() {
   const [contentURL, setContentURL] = useState(null)
 
-  const onSubmit = async data => {
-    let receipt = await upload(data)
-    console.log(receipt)
+  const onSubmit = async text => {
+    // magic happens here
+    console.log(text)
 
-    let url = getContentURL(receipt.cid)
-    setContentURL(url)
+    let mdResponse = await uploadMarkdown(text)
+    console.log(mdResponse.Hash)
+
+    let html = await generate([mdResponse.Hash])
+    console.log(html)
+
+    let response = await uploadHTML(html)
+    console.log(response)
+
+    setContentURL(`https://cloudflare-ipfs.com/ipfs/${response.Hash}`)
   }
 
   const renderSuccess = () => (
@@ -32,12 +44,8 @@ function Main() {
   return (
     <main className="flex justify-center">
       <div className="flex flex-1 flex-col justify-center items-center">
-        { /* <Profile /> */}
         <div>
-          { contentURL 
-           ? renderSuccess()
-           : <TextArea onSubmit={onSubmit} />
-          }
+          {contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}
         </div>
       </div>
     </main>
