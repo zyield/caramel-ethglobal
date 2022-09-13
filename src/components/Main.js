@@ -9,40 +9,9 @@ import storage from '../storage'
 import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
 
-const savePost = text => {
-  let posts = storage.retrieve('posts')
-
-  if (!posts) {
-    storage.save('posts', JSON.stringify([{ text, timestamp: Date.now() }]))
-    return
-  }
-
-  try {
-    posts = JSON.parse(posts)
-  } catch {
-    console.log('here')
-    posts = []
-  } finally {
-    storage.save(
-      'posts',
-      JSON.stringify([...posts, { text, timestamp: Date.now() }])
-    )
-  }
-}
-
-const getPosts = () => {
-  let posts = storage.retrieve('posts') || []
-  try {
-    posts = JSON.parse(posts)
-  } catch {
-    posts = []
-  }
-  return posts.sort((a, b) => b.timestamp - a.timestamp)
-}
 
 function Main() {
   const [contentURL, setContentURL] = useState(null)
-  const [posts, setPosts] = useState(getPosts())
 
   const onSubmit = async text => {
     // magic happens here
@@ -75,14 +44,9 @@ function Main() {
   return (
     <main className="flex justify-center">
       <div className="flex flex-1 flex-col justify-center items-center">
-        {/* <Profile /> */}
         <div>
           {contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}
         </div>
-
-        {posts.map(post => (
-          <Post text={post.text} timestamp={post.timestamp} />
-        ))}
       </div>
     </main>
   )
