@@ -26,7 +26,7 @@ export default function TextArea({ onSubmit }) {
   }
 
   return (
-    <form onSubmit={handleSumit}>
+    <form className="w-full" onSubmit={handleSumit}>
       <Tab.Group>
         {({ selectedIndex }) => (
           <>
@@ -79,6 +79,7 @@ export default function TextArea({ onSubmit }) {
                     <div className="border-b">
                       <div className="mx-px mt-px px-3 pt-2 pb-12 text-sm leading-5 text-gray-800">
                         <div
+                          className="markdown-preview"
                           dangerouslySetInnerHTML={{
                             __html:
                               selectedIndex == 1 ? convert(text) : 'Preview'

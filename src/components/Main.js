@@ -43,10 +43,8 @@ function Main() {
 
   return (
     <main className="flex justify-center">
-      <div className="flex flex-1 flex-col justify-center items-center">
-        <div>
+      <div className="flex flex-1 w-full flex-col justify-center items-center">
           {contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}
-        </div>
       </div>
     </main>
   )

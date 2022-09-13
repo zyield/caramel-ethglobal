@@ -26,19 +26,16 @@ export const generate = hashes => `
     />
     <title>My forever blog</title>
     <style>
-      h1, section {
+      section {
         max-width: 60%;
-        margin: 0 auto;
+        margin: 5% auto;
       }
     </style>
   </head>
   <body>
     <main>
-      <h1>My blog</h1>
-
       <section id="blog">
       </section>
-
     </main>
   </body>
 
