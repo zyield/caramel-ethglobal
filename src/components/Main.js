@@ -47,12 +47,16 @@ function Main() {
   const onSubmit = async text => {
     // magic happens here
     console.log(text)
+
     let mdResponse = await uploadMarkdown(text)
     console.log(mdResponse.Hash)
+
     let html = await generate([mdResponse.Hash])
     console.log(html)
+
     let response = await uploadHTML(html)
     console.log(response)
+
     setContentURL(`https://cloudflare-ipfs.com/ipfs/${response.Hash}`)
   }
 
