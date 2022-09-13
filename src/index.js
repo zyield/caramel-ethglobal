@@ -1,22 +1,75 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import './index.css'
 import App from './App'
-import Ens from './Ens'
 import reportWebVitals from './reportWebVitals'
+
+import { Buffer } from 'buffer'
+import {
+  chain,
+  WagmiConfig,
+  createClient,
+  defaultChains,
+  configureChains
+} from 'wagmi'
+
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+
+// Pick chains
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
+
+// polyfill Buffer for client
+if (!window.Buffer) {
+  window.Buffer = Buffer
+}
+
+const { chains, provider } = configureChains(
+  [chain.mainnet],
+  [
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }),
+    publicProvider()
+  ]
+)
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors: [
+    new MetaMaskConnector({ chains }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: 'Caramel'
+      }
+    }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        qrcode: true
+      }
+    }),
+    new InjectedConnector({
+      chains,
+      options: {
+        name: 'Injected',
+        shimDisconnect: true
+      }
+    })
+  ],
+  provider
+})
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/ens" element={<Ens />} />
-      </Routes>
-    </BrowserRouter>
+    <WagmiConfig client={wagmiClient}>
+      <App />
+    </WagmiConfig>
   </React.StrictMode>
 )
 

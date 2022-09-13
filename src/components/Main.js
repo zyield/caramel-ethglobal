@@ -76,7 +76,7 @@ function Main() {
     <main className="flex justify-center">
       <div className="flex flex-1 flex-col justify-center items-center">
         {/* <Profile /> */}
-        <div className=" w-3/5">
+        <div>
           {contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}
         </div>
 

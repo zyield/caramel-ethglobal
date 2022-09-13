@@ -1,22 +1,20 @@
 import './App.css'
 
-import { WagmiConfig, createClient } from 'wagmi'
-import { getDefaultProvider } from 'ethers'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
-import Hero from './components/Hero'
-import Main from './components/Main'
-
-const client = createClient({
-  autoConnect: true,
-  provider: getDefaultProvider()
-})
+import Ens from './Ens'
 
 function App() {
   return (
-    <WagmiConfig client={client}>
-      <Hero />
-      <Main />
-    </WagmiConfig>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Ens />}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
