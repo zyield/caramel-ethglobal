@@ -6,13 +6,16 @@ import {
   Route,
 } from "react-router-dom";
 
-import Ens from './Ens'
+import PageLayout from './PageLayout'
+import Home from './Home'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Ens />}/>
+        <Route element={<PageLayout />}>
+          <Route path="/" element={<Home />}/>
+        </Route>
       </Routes>
     </BrowserRouter>
   )
