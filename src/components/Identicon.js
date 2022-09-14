@@ -7,7 +7,6 @@ const StyledIdenticon = styled.div`
   width: 1rem;
   margin-bottom: 0.2rem;
   border-radius: 1.125rem;
-  background-color: black;
 `;
 
 function Identicon({ address }) {

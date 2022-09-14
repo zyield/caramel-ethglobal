@@ -2,7 +2,8 @@ import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, ClipboardIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { truncateAddress } from '../utils'
-import MinimalNotification from '../components/MinimalNotification'
+import MinimalNotification from './MinimalNotification'
+import Identicon from './Identicon'
 
 import { useBalance } from 'wagmi'
 
@@ -87,12 +88,8 @@ function AccountModal({ open, setOpen, disconnect, address }) {
                   <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
               </div>
-              <div className="mt-3 flex justify-center sm:mt-0 sm:ml-4">
-                <img
-                  className="inline-block h-12 w-12 rounded-full"
-                  alt=""
-                  src={avatar}
-                />
+              <div className="flex justify-center sm:mt-0 sm:ml-4">
+                <Identicon address={address} />
               </div>
               <div className="w-full block text-center mt-4 font-bold text-gray-600">
                 {truncateAddress(address)}
