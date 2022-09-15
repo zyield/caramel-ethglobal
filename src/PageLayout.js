@@ -4,13 +4,17 @@ import {
 
 import Account from './components/Account'
 import Hero from './components/Hero'
+import Footer from './components/Footer'
 
 function PageLayout() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <Account />
-      <Hero />
-      <Outlet />
+    <div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <Account display_connect_button={false} />
+        <Hero />
+        <Outlet />
+      </div>
+      <Footer />
     </div>
   )
 }

@@ -6,17 +6,21 @@ import { useConnect } from 'wagmi'
 import ConnectModal from './ConnectModal'
 import ConnectNotification from './ConnectNotification'
 
-export const Connect = ({ callback }) => {
+function Connect({ callback, button_text, custom_style }) {
   const [open, setOpen] = useState(false)
   const { connect, connectors, error, isConnecting, pendingConnector } = useConnect()
+
+  button_text = button_text || "Connect Wallet"
+
+  custom_style = custom_style || "inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 
   return (
     <div className="flex justify-end items-right mt-4 mr-4">
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className={custom_style}
       >
-        Connect Wallet
+        {button_text}
       </button>
 
       {error && (
@@ -32,3 +36,5 @@ export const Connect = ({ callback }) => {
     </div>
   )
 }
+
+export default Connect
