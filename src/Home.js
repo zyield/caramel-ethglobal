@@ -111,7 +111,7 @@ function Home() {
         </div>
         {(ensChecked || manualEnsValid) ? (
           <div className="mt-8">
-            <BlogPublisher callback={updateContentHash} />
+            <BlogPublisher callback={updateContentHash} ens_name={manualEnsName} />
           </div>
         ) : (
           null
@@ -130,7 +130,7 @@ function Home() {
         </div>
         {ensChecked ? (
           <div className="mt-8">
-            <BlogPublisher callback={updateContentHash} />
+            <BlogPublisher callback={updateContentHash} ens_name={ensName} />
           </div>
         ) : (
           null
