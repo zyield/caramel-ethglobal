@@ -42,11 +42,6 @@ function Home() {
     name: manualEnsName
   })
 
-  console.log("manualEnsName", manualEnsName)
-  console.log("ens address", ensAddress?.toLowerCase())
-  console.log("my address", address?.toLowerCase())
-  console.log("manualEnsValid", manualEnsValid)
-
   const { data, error, write } = useContractWrite(
     {
       mode: "recklesslyUnprepared",
@@ -118,7 +113,7 @@ function Home() {
       }
         {(ensChecked || manualEnsValid) ? (
           <div className="mt-8">
-            <BlogPublisher callback={updateContentHash} />
+            <BlogPublisher callback={updateContentHash} ens_name={manualEnsName} />
           </div>
         ) : (manualEnsName && lookupClicked ? (
           <div className="mt-8">It doesn't look like you own that ENS name</div>
@@ -137,7 +132,7 @@ function Home() {
         </div>
         {ensChecked ? (
           <div className="mt-8">
-            <BlogPublisher callback={updateContentHash} />
+            <BlogPublisher callback={updateContentHash} ens_name={ensName} />
           </div>
         ) : (
           null

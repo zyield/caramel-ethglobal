@@ -4,7 +4,7 @@ function Loading({className}) {
   let classes = className ? className : "flex justify-center pt-40"
   return (
     <div className={classes}>
-      <Puff />
+      <Puff stroke="#333" />
     </div>
   )
 }
