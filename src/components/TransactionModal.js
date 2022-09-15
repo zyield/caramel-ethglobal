@@ -14,7 +14,7 @@ function TransactionModal({hash}) {
 
   const handleOnClose = () => {
     setOpen(false)
-    window.location.reload(false)
+    //window.location.reload(false)
   }
 
   const transactionLink = (hash) => {
