@@ -14,7 +14,6 @@ function TransactionModal({hash}) {
 
   const handleOnClose = () => {
     setOpen(false)
-    //window.location.reload(false)
   }
 
   const transactionLink = (hash) => {
@@ -66,11 +65,7 @@ function TransactionModal({hash}) {
                 </button>
               </div>
               <div>
-                {isLoading &&
-                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full">
-                    <Loading className="bg-black-100 text-green-600" />
-                  </div>
-                }
+                {isLoading && <div className="flex justify-center"><Loading className="mt-4 text-center" /></div>}
                 {!isLoading &&
                   <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                     <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />

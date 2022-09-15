@@ -42,11 +42,6 @@ function Home() {
     name: manualEnsName
   })
 
-  console.log("manualEnsName", manualEnsName)
-  console.log("ens address", ensAddress?.toLowerCase())
-  console.log("my address", address?.toLowerCase())
-  console.log("manualEnsValid", manualEnsValid)
-
   const { data, error, write } = useContractWrite(
     {
       mode: "recklesslyUnprepared",
