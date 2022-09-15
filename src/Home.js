@@ -23,6 +23,7 @@ import EnsDomain from "./components/EnsDomain"
 import BlogPublisher from "./components/BlogPublisher"
 import Loading from "./components/Loading"
 import TransactionModal from './components/TransactionModal'
+import Connect from './components/Connect'
 
 import PublicResolverABI from "./abis/PublicResolver.json"
 
@@ -31,6 +32,7 @@ function Home() {
   const { data: ensName } = useEnsName({ address })
 
   const [ensChecked, setEnsChecked] = useState(false)
+  const [lookupClicked, setLookupClicked] = useState(false)
   const [manualEnsName, setManualEnsName] = useState("")
   const [manualEnsValid, setManualEnsValid] = useState()
 
@@ -58,6 +60,7 @@ function Home() {
   )
 
   const handleEnsLookup = () => {
+    setLookupClicked(true)
     if (manualEnsName && !isLoadingEnsAddress) {
       setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
     }
@@ -74,10 +77,8 @@ function Home() {
 
   if (!address) {
     return (
-      <div
-        className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-        <WalletIcon className="mx-auto h-12 w-12 text-gray-400" />
-        <span className="mt-2 block text-sm font-medium text-gray-900">Connect your wallet to continue</span>
+      <div className="flex justify-center">
+        <Connect button_text="Get Started" custom_style="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"/>
       </div>
     )
   }
@@ -87,6 +88,11 @@ function Home() {
       <div className="text-center">
         <h2 className="text-xl mb-4">We couldn't detect an ENS domain for your address</h2>
         <p className="mb-8">If you have an ENS domain but didn't setup your name server, enter your domain below</p>
+      { manualEnsValid ? (
+        <div className="flex justify-center">
+          <EnsDomain domain={manualEnsName} checked={true} setChecked={setEnsChecked} />
+        </div>
+      ) : (
         <div className="flex justify-center items-center">
           <div>
             <input
@@ -101,21 +107,22 @@ function Home() {
           </div>
           <div className="align-baseline">
             <button
-        onClick={handleEnsLookup}
-        type="button"
-        className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 align-baseline ml-4"
-      >
-        Look-up
-      </button>
+              onClick={handleEnsLookup}
+              type="button"
+              className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 align-baseline ml-4"
+            >
+              Look-up
+            </button>
           </div>
-        </div>
+        </div>)
+      }
         {(ensChecked || manualEnsValid) ? (
           <div className="mt-8">
             <BlogPublisher callback={updateContentHash} ens_name={manualEnsName} />
           </div>
-        ) : (
-          null
-        )}
+        ) : (manualEnsName && lookupClicked ? (
+          <div className="mt-8">It doesn't look like you own that ENS name</div>
+        ) : "" ) }
 
       {data && data?.hash && <TransactionModal hash={data?.hash} />}
       </div>
