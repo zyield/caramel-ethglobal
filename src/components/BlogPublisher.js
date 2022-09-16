@@ -18,7 +18,10 @@ function BlogPublisher({ callback, ens_name }) {
     console.log(text)
 
     let mdResponse = await uploadMarkdown(text)
-    let html = await generate([mdResponse.Hash])
+    let html = await generate({
+      hashes: [mdResponse.Hash],
+      ens: ens_name
+    })
     let response = await uploadHTML(html)
 
     if (callback) {
