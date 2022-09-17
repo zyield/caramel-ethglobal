@@ -81,16 +81,6 @@ function Home() {
     )
   }
 
-  if (ensChecked || manualEnsValid)
-    return (
-        <div className="mt-8">
-          <BlogPublisher
-            callback={updateContentHash}
-            ens_name={manualEnsName}
-          />
-        </div>
-    )
-
   if (!ensName)
     return (
       <div className="text-center">
