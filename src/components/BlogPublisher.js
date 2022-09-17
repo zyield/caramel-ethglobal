@@ -56,7 +56,9 @@ function BlogPublisher({ callback, ens_name }) {
   )
 
   return (
-    <div>{contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}</div>
+    <div style={{ maxWidth: 750, margin: '0 auto' }}>
+      {contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}
+    </div>
   )
 }
 

@@ -52,6 +52,10 @@ export const generate = ({ hashes, ens }) => `
         align-items: center;
       }
 
+      section h1 {
+        color: #444;
+      }
+
       article {
         margin-top: 3%;
         max-width: 800px;
