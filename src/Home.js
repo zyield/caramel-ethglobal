@@ -49,7 +49,7 @@ function Home() {
     contractInterface: PublicResolverABI,
     functionName: 'setContenthash',
     overrides: {
-      gasLimit: 80000
+      gasLimit: 100000
     }
   })
 
