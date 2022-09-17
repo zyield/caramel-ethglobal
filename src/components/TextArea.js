@@ -21,13 +21,15 @@ export default function TextArea({ onSubmit }) {
     e.preventDefault()
     setLoading(true)
 
-    if (title)
-      text = `
+    let payload = text
+    if (title) {
+      payload = `
         # ${title}
         ${text}
       `
+    }
 
-    await onSubmit(text)
+    await onSubmit(payload)
 
     setLoading(false)
   }
