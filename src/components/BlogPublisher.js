@@ -87,7 +87,9 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   }
 
   if (contentURL) {
-    ;<div style={{ maxWidth: 450, margin: '0 auto' }}>{renderSuccess()}</div>
+    return (
+      <div style={{ maxWidth: 450, margin: '0 auto' }}>{renderSuccess()}</div>
+    )
   }
 
   return (
