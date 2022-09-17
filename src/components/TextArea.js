@@ -101,7 +101,7 @@ export default function TextArea({ onSubmit }) {
                     <div className="border-b">
                       <div className="mx-px mt-px px-3 pt-2 pb-12 text-sm leading-5 text-gray-800">
                         <div
-                          className="markdown-preview"
+                          className="markdown-preview text-left"
                           dangerouslySetInnerHTML={{
                             __html:
                               selectedIndex == 1 ? convert(text) : 'Preview'
