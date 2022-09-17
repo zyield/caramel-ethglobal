@@ -44,6 +44,7 @@ export default function TextArea({ onSubmit }) {
         <input
           type="text"
           name="title"
+          onChange={e => setTitle(e.target.value)}
           id="title"
           className="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm"
           placeholder="My perfect post"
