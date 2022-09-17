@@ -49,7 +49,7 @@ function Home() {
     contractInterface: PublicResolverABI,
     functionName: 'setContenthash',
     overrides: {
-      gasLimit: 100000
+      gasLimit: 200000
     }
   })
 
@@ -80,6 +80,16 @@ function Home() {
       </div>
     )
   }
+
+  if (ensChecked || manualEnsValid)
+    return (
+        <div className="mt-8">
+          <BlogPublisher
+            callback={updateContentHash}
+            ens_name={manualEnsName}
+          />
+        </div>
+    )
 
   if (!ensName)
     return (
