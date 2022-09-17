@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import {
   useAccount,
   useContractWrite,
+  useContractRead,
   usePrepareContractWrite,
   useProvider,
   useEnsName,
@@ -27,6 +28,30 @@ import Connect from './components/Connect'
 
 import PublicResolverABI from './abis/PublicResolver.json'
 
+import { gateways } from './ipfs'
+import { extractHashes } from './blog/parser'
+
+// stolen from
+// https://github.com/ensdomains/content-hash/blob/master/src/profiles.js
+const hexStringToBuffer = (hex) => {
+  let prefix = hex.slice(0, 2);
+  let value = hex.slice(2);
+  let res = '';
+  if (prefix === '0x') res = value;
+  else res = hex;
+  return multiH.fromHexString(res);
+}
+
+const decodeContentHash = contentHash => {
+  let buffer = hexStringToBuffer(contentHash)
+  let codec = multiC.getCodec(buffer)
+  let value = multiC.rmPrefix(buffer)
+  let cid = new CID(value).toV1()
+  let format = cid.codec === 'libp2p-key' ? 'base36' : 'base32'
+
+  return cid.toString(format)
+}
+
 function Home() {
   const { address, isLoading, isConnected } = useAccount({ fetchEns: true })
   const { data: ensName } = useEnsName({ address })
@@ -35,6 +60,7 @@ function Home() {
   const [lookupClicked, setLookupClicked] = useState(false)
   const [manualEnsName, setManualEnsName] = useState('')
   const [manualEnsValid, setManualEnsValid] = useState()
+  const [savedPostsHashes, setPostHashes] = useState([])
 
   const toHex = d =>
     d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
@@ -67,6 +93,25 @@ function Home() {
     let nameHash = namehash.hash(ensName)
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
   }
+
+
+  const { data: contentHash } = useContractRead({
+    addressOrName: process.env.REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS,
+    contractInterface: PublicResolverABI,
+    functionName: 'contenthash',
+    args: [namehash.hash(ensName || manualEnsName)]
+  })
+
+  useEffect(() => {
+    if (!contentHash || contentHash == '0x')
+      return // no hash or no posts yet
+
+    let decoded = decodeContentHash(contentHash)
+    fetch(`${gateways.infura}/${decoded}`)
+    .then(res => res.text())
+    .then(extractHashes)
+    .then(setPostHashes)
+  }, [contentHash])
 
   if (isLoading) return <Loading />
 
@@ -127,7 +172,8 @@ function Home() {
           <div className="mt-8">
             <BlogPublisher
               callback={updateContentHash}
-              ens_name={manualEnsName}
+              ensName={manualEnsName}
+              existingPosts={savedPostsHashes}
             />
           </div>
         ) : manualEnsName && lookupClicked ? (
@@ -153,7 +199,11 @@ function Home() {
         </div>
         {ensChecked ? (
           <div className="mt-8">
-            <BlogPublisher callback={updateContentHash} ens_name={ensName} />
+            <BlogPublisher
+              callback={updateContentHash}
+              ensName={ensName}
+              existingPosts={savedPostsHashes}
+            />
           </div>
         ) : null}
 

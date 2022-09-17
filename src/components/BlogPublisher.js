@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TextArea from './TextArea'
 import ContentPopup from './ContentPopup'
 import Post from './Post'
@@ -9,9 +9,25 @@ import storage from '../storage'
 import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
 
-function BlogPublisher({ callback, ens_name }) {
+function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
+  const [posts, setPosts] = useState([])
+
+  useEffect(() => {
+    if (!existingPosts.length) return
+
+    Promise.all(existingPosts.map(hash =>
+      fetch('https://gateway.pinata.cloud/ipfs/' + hash)
+      .then(res => res.text())
+    ))
+    .then(posts =>
+      posts.map(markdown => convert(markdown))
+    )
+    .then(setPosts)
+
+  }, [ existingPosts ])
+
 
   const onSubmit = async text => {
     // magic happens here
@@ -20,7 +36,7 @@ function BlogPublisher({ callback, ens_name }) {
     let mdResponse = await uploadMarkdown(text)
     let html = await generate({
       hashes: [mdResponse.Hash],
-      ens: ens_name
+      ens: ensName
     })
     let response = await uploadHTML(html)
 
@@ -29,7 +45,7 @@ function BlogPublisher({ callback, ens_name }) {
     }
 
     setHash(response.Hash)
-    setContentURL(`https://${ens_name}.limo`)
+    setContentURL(`https://${ensName}.limo`)
   }
 
   const renderSuccess = () => (
@@ -55,9 +71,35 @@ function BlogPublisher({ callback, ens_name }) {
     </div>
   )
 
+
+
+  const renderPosts = () => {
+    if (!posts.length) return null
+
+    return (
+      <section>
+        <h2 className="text-left">Previously published:</h2>
+        { posts.map(post =>
+            <article
+              className="pb-5 border-b my-5 text-left"
+              dangerouslySetInnerHTML={{ __html: post }}>
+            </article>
+          )
+        }
+      </section>
+    )
+  }
+
+  if (contentURL) {
+    <div style={{ maxWidth: 450, margin: '0 auto' }}>
+      { renderSuccess() }
+    </div>
+  }
+
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
-      {contentURL ? renderSuccess() : <TextArea onSubmit={onSubmit} />}
+       <TextArea onSubmit={onSubmit} />
+      { renderPosts() }
     </div>
   )
 }
