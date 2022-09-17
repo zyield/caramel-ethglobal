@@ -2,12 +2,16 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 
-export default function NetworkSwitchModal({networkData, switchNetwork}) {
+export default function NetworkSwitchModal({ networkData, switchNetwork }) {
   const [open, setOpen] = useState(true)
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={setOpen}>
+      <Dialog
+        as="div"
+        className="fixed z-10 inset-0 overflow-y-auto"
+        onClose={setOpen}
+      >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -22,7 +26,10 @@ export default function NetworkSwitchModal({networkData, switchNetwork}) {
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
-          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+          <span
+            className="hidden sm:inline-block sm:align-middle sm:h-screen"
+            aria-hidden="true"
+          >
             &#8203;
           </span>
           <Transition.Child
@@ -47,22 +54,26 @@ export default function NetworkSwitchModal({networkData, switchNetwork}) {
               </div>
               <div className="sm:flex sm:items-start">
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-        Connected to {networkData.chain?.name ?? networkData.chain?.id}{' '}
-        {networkData.chain?.unsupported && '(unsupported)'}
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg leading-6 font-medium text-gray-900"
+                  >
+                    Connected to{' '}
+                    {networkData.chain?.name ?? networkData.chain?.id}{' '}
+                    {networkData.chain?.unsupported && '(unsupported)'}
                   </Dialog.Title>
                   <div className="mt-4">
                     {switchNetwork &&
-                      networkData.chains.map((x) =>
+                      networkData.chains.map(x =>
                         x.id === networkData.chain?.id ? null : (
-                          <button 
+                          <button
                             className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            key={x.id} 
+                            key={x.id}
                             onClick={() => switchNetwork(x.id)}
                           >
                             Switch to {x.name}
                           </button>
-                        ),
+                        )
                       )}
                   </div>
                 </div>
@@ -72,6 +83,5 @@ export default function NetworkSwitchModal({networkData, switchNetwork}) {
         </div>
       </Dialog>
     </Transition.Root>
-
   )
 }

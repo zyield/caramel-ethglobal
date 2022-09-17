@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/solid'
 
-export default function Notification({text}) {
+export default function Notification({ text }) {
   const [show, setShow] = useState(true)
 
   return (
@@ -29,7 +29,9 @@ export default function Notification({text}) {
               <div className="p-4">
                 <div className="flex items-center">
                   <div className="w-0 flex-1 flex justify-between">
-                    <p className="w-0 flex-1 text-sm font-medium text-gray-900">{text}</p>
+                    <p className="w-0 flex-1 text-sm font-medium text-gray-900">
+                      {text}
+                    </p>
                   </div>
                   <div className="ml-4 flex-shrink-0 flex">
                     <button

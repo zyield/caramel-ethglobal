@@ -6,12 +6,8 @@ import { truncateAddress } from '../utils'
 import AccountModal from './AccountModal'
 import Loading from './Loading'
 
-function Account({display_connect_button}) {
-  const {
-    address,
-    isLoading,
-    isConnected
-  } = useAccount({
+function Account({ display_connect_button }) {
+  const { address, isLoading, isConnected } = useAccount({
     fetchEns: true
   })
 
@@ -38,7 +34,9 @@ function Account({display_connect_button}) {
             <div>
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
             </div>
-            <div className="text-gray-800 ml-2 text-xs">{chain?.name === "Chain 1" ? "Mainnet" : chain?.name}</div>
+            <div className="text-gray-800 ml-2 text-xs">
+              {chain?.name === 'Chain 1' ? 'Mainnet' : chain?.name}
+            </div>
           </div>
         </div>
         <AccountModal
@@ -51,12 +49,11 @@ function Account({display_connect_button}) {
     )
   }
 
-  if (!display_connect_button) return ""
+  if (!display_connect_button) return ''
 
   if (!address) return <Connect />
 
   if (loading || isLoading) return null
-
 }
 
 export default Account

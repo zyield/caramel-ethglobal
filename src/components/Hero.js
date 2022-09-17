@@ -7,11 +7,20 @@ export default function Hero() {
             Caramel
           </h2>
           <p className="max-w-xl mt-2 mx-auto text-lg text-gray-500">
-            Launch a decentralized, censorship-resistant blog on your .Eth domain
+            Launch a decentralized, censorship-resistant blog on your .Eth
+            domain
           </p>
 
           <p className="mt-8 text-gray-500">
-            Don’t have a .Eth domain yet? Get it <a className="text-indigo-500 hover:text-indigo-600 underline" href="https://app.ens.domains/" target="_blank">here</a>!
+            Don’t have a .Eth domain yet? Get it{' '}
+            <a
+              className="text-indigo-500 hover:text-indigo-600 underline"
+              href="https://app.ens.domains/"
+              target="_blank"
+            >
+              here
+            </a>
+            !
           </p>
         </div>
       </div>

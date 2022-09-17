@@ -11,13 +11,12 @@ export const NetworkSwitcher = () => {
     <div>
       {switchNetworkError && switchNetworkError?.message}
 
-    {
-      networkData.chain?.unsupported && 
-        <NetworkSwitchModal 
-          networkData={networkData} 
+      {networkData.chain?.unsupported && (
+        <NetworkSwitchModal
+          networkData={networkData}
           switchNetwork={switchNetwork}
         />
-    }
+      )}
     </div>
   )
 }

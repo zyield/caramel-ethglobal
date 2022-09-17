@@ -88,7 +88,7 @@ export default function ConnectModal({
                             type="button"
                             disabled={!x.ready}
                             key={x.name}
-                            onClick={() => connect({ connector: x})}
+                            onClick={() => connect({ connector: x })}
                             className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-gray-900 shadow bg-gray-50 hover:bg-gray-200 hover:border-1 border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3 mb-3 w-full justify-center"
                           >
                             {renderWalletLogo(x.name)}

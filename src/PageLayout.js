@@ -1,6 +1,4 @@
-import {
-  Outlet
-} from "react-router-dom"
+import { Outlet } from 'react-router-dom'
 
 import Account from './components/Account'
 import Hero from './components/Hero'

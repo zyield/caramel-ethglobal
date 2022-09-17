@@ -56,7 +56,6 @@ export const generate = ({ hashes, ens }) => `
         margin-top: 3%;
         max-width: 800px;
         width: 100%;
-        padding: 12px 24px;
         border-bottom: 1px solid rgb(244, 244, 245);
       }
     </style>

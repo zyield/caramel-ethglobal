@@ -4,7 +4,7 @@ import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useWaitForTransaction, useNetwork } from 'wagmi'
 import Loading from './Loading'
 
-function TransactionModal({hash}) {
+function TransactionModal({ hash }) {
   const [open, setOpen] = useState(true)
   const { chain, chains } = useNetwork()
 
@@ -16,17 +16,21 @@ function TransactionModal({hash}) {
     setOpen(false)
   }
 
-  const transactionLink = (hash) => {
+  const transactionLink = hash => {
     if (chain.id == 5) {
       return `https://goerli.etherscan.io/tx/${hash}`
-    } else if ( chain.id == 1) {
+    } else if (chain.id == 1) {
       return `https://etherscan.io/tx/${hash}`
     }
   }
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={setOpen}>
+      <Dialog
+        as="div"
+        className="fixed z-10 inset-0 overflow-y-auto"
+        onClose={setOpen}
+      >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -41,7 +45,10 @@ function TransactionModal({hash}) {
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
-          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+          <span
+            className="hidden sm:inline-block sm:align-middle sm:h-screen"
+            aria-hidden="true"
+          >
             &#8203;
           </span>
           <Transition.Child
@@ -65,23 +72,38 @@ function TransactionModal({hash}) {
                 </button>
               </div>
               <div>
-                {isLoading && <div className="flex justify-center"><Loading className="mt-4 text-center" /></div>}
-                {!isLoading &&
-                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                    <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+                {isLoading && (
+                  <div className="flex justify-center">
+                    <Loading className="mt-4 text-center" />
                   </div>
-                }
+                )}
+                {!isLoading && (
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <CheckIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
 
                 <div className="mt-3 text-center sm:mt-5">
-                  <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-800">
-                  {isLoading ? "Transaction submitted" : (isError ? "There was an error" : "Transaction mined")}
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg leading-6 font-medium text-gray-800"
+                  >
+                    {isLoading
+                      ? 'Transaction submitted'
+                      : isError
+                      ? 'There was an error'
+                      : 'Transaction mined'}
                   </Dialog.Title>
                   <div className="mt-2 mb-4">
                     <p className="text-sm text-gray-700">
-                      You can close this window, the transaction will be processed in the background.
+                      You can close this window, the transaction will be
+                      processed in the background.
                     </p>
                   </div>
-                  {hash &&
+                  {hash && (
                     <div className="px-4 py-3 sm:px-6 flex justify-center">
                       <a
                         target="_blank"
@@ -91,7 +113,7 @@ function TransactionModal({hash}) {
                         View Transaction
                       </a>
                     </div>
-                  }
+                  )}
                 </div>
               </div>
             </div>

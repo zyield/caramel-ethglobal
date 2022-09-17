@@ -1,6 +1,10 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { XMarkIcon, ClipboardIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
+import {
+  XMarkIcon,
+  ClipboardIcon,
+  ArrowRightOnRectangleIcon
+} from '@heroicons/react/24/outline'
 import { truncateAddress } from '../utils'
 import MinimalNotification from './MinimalNotification'
 import Identicon from './Identicon'

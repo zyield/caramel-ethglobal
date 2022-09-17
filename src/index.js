@@ -28,7 +28,7 @@ if (!window.Buffer) {
   window.Buffer = Buffer
 }
 
-const network = process.env.REACT_APP_NETWORK || "mainnet"
+const network = process.env.REACT_APP_NETWORK || 'mainnet'
 
 const { chains, provider } = configureChains(
   [chain[network]],
