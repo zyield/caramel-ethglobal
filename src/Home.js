@@ -33,13 +33,13 @@ import { extractHashes } from './blog/parser'
 
 // stolen from
 // https://github.com/ensdomains/content-hash/blob/master/src/profiles.js
-const hexStringToBuffer = (hex) => {
-  let prefix = hex.slice(0, 2);
-  let value = hex.slice(2);
-  let res = '';
-  if (prefix === '0x') res = value;
-  else res = hex;
-  return multiH.fromHexString(res);
+const hexStringToBuffer = hex => {
+  let prefix = hex.slice(0, 2)
+  let value = hex.slice(2)
+  let res = ''
+  if (prefix === '0x') res = value
+  else res = hex
+  return multiH.fromHexString(res)
 }
 
 const decodeContentHash = contentHash => {
@@ -94,7 +94,6 @@ function Home() {
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
   }
 
-
   const { data: contentHash } = useContractRead({
     addressOrName: process.env.REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS,
     contractInterface: PublicResolverABI,
@@ -103,14 +102,13 @@ function Home() {
   })
 
   useEffect(() => {
-    if (!contentHash || contentHash == '0x')
-      return // no hash or no posts yet
+    if (!contentHash || contentHash == '0x') return // no hash or no posts yet
 
     let decoded = decodeContentHash(contentHash)
     fetch(`${gateways.infura}/${decoded}`)
-    .then(res => res.text())
-    .then(extractHashes)
-    .then(setPostHashes)
+      .then(res => res.text())
+      .then(extractHashes)
+      .then(setPostHashes)
   }, [contentHash])
 
   if (isLoading) return <Loading />
