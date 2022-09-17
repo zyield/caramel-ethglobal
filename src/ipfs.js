@@ -18,12 +18,14 @@ export async function pinText(text, url = PINEAPPLE_URL) {
   return (await res.json()).result
 }
 
-const mirrors = {
-  pinata: 'https://gateway.pinata.cloud/ipfs'
+export const gateways = {
+  pinata: 'https://gateway.pinata.cloud/ipfs',
+  infura: 'https://caramel.infura-ipfs.io/ipfs',
+  cloudflare: 'https://cloudflare-ipfs.com/ipfs'
 }
 
 export const getContentURL = (key, mirror = 'pinata') =>
-  `${mirrors[mirror]}/${key}`
+  `${gateways[mirror]}/${key}`
 
 // Infura
 const uploadFile = async ({ content, name, type }) => {

@@ -27,7 +27,7 @@ export default function TextArea({ onSubmit }) {
       payload = text
     }
 
-    await onSubmit(text)
+    await onSubmit(payload)
 
     setLoading(false)
   }
