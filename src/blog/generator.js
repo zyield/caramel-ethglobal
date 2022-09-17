@@ -82,7 +82,7 @@ export const generate = ({ hashes, ens }) => `
     let hashes = ${JSON.stringify(hashes)}
 
     Promise.all(hashes.map(hash =>
-      fetch('https://gateway.pinata.cloud/ipfs/' + hash)
+      fetch('https://caramel.infura-ipfs.io/ipfs' + hash)
       .then(res => res.text())
     ))
     .then(posts =>
