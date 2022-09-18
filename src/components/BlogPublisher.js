@@ -80,7 +80,12 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
 
   if (contentURL) {
     return (
-      <div style={{ maxWidth: 450, margin: '0 auto' }}>{renderSuccess()}</div>
+      <div
+        className="text-center"
+        style={{ maxWidth: 450, margin: '0 auto' }}
+      >
+        {renderSuccess()}
+      </div>
     )
   }
 
