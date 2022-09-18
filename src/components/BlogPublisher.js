@@ -30,11 +30,9 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
 
   const onSubmit = async text => {
     // magic happens here
-    console.log(text)
-
     let mdResponse = await uploadMarkdown(text)
     let html = await generate({
-      hashes: [...existingPosts, mdResponse.Hash],
+      hashes: [mdResponse.Hash, ...existingPosts],
       ens: ensName
     })
     let response = await uploadHTML(html)
@@ -78,7 +76,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
         <h2 className="text-left">All posts:</h2>
         {posts.map(post => (
           <article
-            className="pb-5 border-b my-5 text-left"
+            className="markdown-preview pb-5 border-b my-5 text-left"
             dangerouslySetInnerHTML={{ __html: post }}
           ></article>
         ))}
