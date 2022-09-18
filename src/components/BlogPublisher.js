@@ -3,7 +3,7 @@ import TextArea from './TextArea'
 import ContentPopup from './ContentPopup'
 import Post from './Post'
 
-import { addFile, uploadHTML, uploadMarkdown, getContentURL } from '../ipfs'
+import { gateways, addFile, uploadHTML, uploadMarkdown, getContentURL } from '../ipfs'
 
 import storage from '../storage'
 import { generate } from '../blog/generator'
@@ -19,7 +19,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
 
     Promise.all(
       existingPosts.map(hash =>
-        fetch('https://gateway.pinata.cloud/ipfs/' + hash).then(res =>
+        fetch(`${gateways.infura}/${hash}`).then(res =>
           res.text()
         )
       )
@@ -75,7 +75,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
 
     return (
       <section>
-        <h2 className="text-left">Previously published:</h2>
+        <h2 className="text-left">All posts:</h2>
         {posts.map(post => (
           <article
             className="pb-5 border-b my-5 text-left"
