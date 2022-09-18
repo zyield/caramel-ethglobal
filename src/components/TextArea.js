@@ -23,8 +23,7 @@ export default function TextArea({ onSubmit }) {
 
     let payload = text
     if (title) {
-      // TODO: title
-      payload = text
+      payload = `# ${title}\n${text}`
     }
 
     await onSubmit(payload)
