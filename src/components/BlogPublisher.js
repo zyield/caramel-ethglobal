@@ -63,7 +63,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
         <a
           className="underline"
           target="_blank"
-          href={`https://cloudflare-ipfs.com/ipfs/${hash}`}
+          href={`${gateways.infura}/${hash}`}
         >
           IPFS direct link
         </a>
