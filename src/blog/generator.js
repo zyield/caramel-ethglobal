@@ -41,6 +41,10 @@ export const generate = ({ hashes, ens }) => `
         overflow-y: scroll;
       }
 
+      header {
+        text-align: center;
+      }
+
       header,
       section {
         max-width: 60%;
