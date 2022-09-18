@@ -21,6 +21,7 @@ import multiC from 'multicodec'
 import CID from 'cids'
 
 import Blog from './Blog'
+import Hero from './components/Hero'
 import EnsDomain from './components/EnsDomain'
 import Loading from './components/Loading'
 import TransactionModal from './components/TransactionModal'
@@ -117,12 +118,25 @@ function Home() {
 
   if (!address) {
     return (
-      <div className="flex justify-center">
-        <Connect
-          button_text="Get Started"
-          custom_style="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        />
+      <div>
+        <Hero />
+        <div className="flex justify-center">
+          <Connect
+            button_text="Get Started"
+            custom_style="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          />
+        </div>
       </div>
+    )
+  }
+
+  if (ensChecked || manualEnsValid) {
+    return (
+      <Blog
+        callback={updateContentHash}
+        ensName={manualEnsName}
+        existingPosts={savedPostsHashes}
+      />
     )
   }
 

@@ -22,7 +22,7 @@ function Account({ display_connect_button }) {
 
   if (address) {
     return (
-      <div className="flex justify-end items-right mt-4 mr-4">
+      <div className="flex justify-center items-right mt-4 mr-4">
         <div
           className="text-white flex bg-white shadow hover:bg-gray-50 px-3 py-2 rounded-r-md rounded-l-md justify-between items-center cursor-pointer px-2"
           onClick={() => setOpen(true)}

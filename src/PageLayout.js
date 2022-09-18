@@ -9,8 +9,9 @@ function PageLayout() {
     <div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <Account display_connect_button={false} />
-        <Hero />
-        <Outlet />
+        <div className="mt-10">
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </div>
