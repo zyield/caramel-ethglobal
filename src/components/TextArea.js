@@ -12,7 +12,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TextArea({ onSubmit }) {
+export default function TextArea({ onSubmit, onCancel }) {
   const [text, setText] = useState('')
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
@@ -118,11 +118,18 @@ export default function TextArea({ onSubmit }) {
       </Tab.Group>
       <div className="mt-2 flex justify-end">
         <button
+          type="button"
+          onClick={onCancel}
+          className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          Cancel
+        </button>
+        <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="ml-5 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          Post
+          Publish
         </button>
       </div>
     </form>

@@ -20,8 +20,8 @@ import multiH from 'multihashes'
 import multiC from 'multicodec'
 import CID from 'cids'
 
+import Blog from './Blog'
 import EnsDomain from './components/EnsDomain'
-import BlogPublisher from './components/BlogPublisher'
 import Loading from './components/Loading'
 import TransactionModal from './components/TransactionModal'
 import Connect from './components/Connect'
@@ -61,6 +61,8 @@ function Home() {
   const [manualEnsName, setManualEnsName] = useState('')
   const [manualEnsValid, setManualEnsValid] = useState()
   const [savedPostsHashes, setPostHashes] = useState([])
+
+  console.log('saved hashes', savedPostsHashes)
 
   const toHex = d =>
     d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
@@ -168,7 +170,7 @@ function Home() {
         )}
         {ensChecked || manualEnsValid ? (
           <div className="mt-8">
-            <BlogPublisher
+            <Blog
               callback={updateContentHash}
               ensName={manualEnsName}
               existingPosts={savedPostsHashes}
@@ -197,7 +199,7 @@ function Home() {
         </div>
         {ensChecked ? (
           <div className="mt-8">
-            <BlogPublisher
+            <Blog
               callback={updateContentHash}
               ensName={ensName}
               existingPosts={savedPostsHashes}

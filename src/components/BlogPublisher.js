@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
 import TextArea from './TextArea'
 import ContentPopup from './ContentPopup'
-import Post from './Post'
 
-import { gateways, addFile, uploadHTML, uploadMarkdown, getContentURL } from '../ipfs'
+import {
+  gateways,
+  addFile,
+  uploadHTML,
+  uploadMarkdown,
+  getContentURL
+} from '../ipfs'
 
 import storage from '../storage'
 import { generate } from '../blog/generator'
@@ -12,21 +17,7 @@ import { convert } from '../blog/converter'
 function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
-  const [posts, setPosts] = useState([])
-
-  useEffect(() => {
-    if (!existingPosts.length) return
-
-    Promise.all(
-      existingPosts.map(hash =>
-        fetch(`${gateways.infura}/${hash}`).then(res =>
-          res.text()
-        )
-      )
-    )
-      .then(posts => posts.map(markdown => convert(markdown)))
-      .then(setPosts)
-  }, [existingPosts])
+  const [isEditing, setIsEditing] = useState(false)
 
   const onSubmit = async text => {
     // magic happens here
@@ -68,22 +59,6 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
     </div>
   )
 
-  const renderPosts = () => {
-    if (!posts.length) return null
-
-    return (
-      <section>
-        <h2 className="text-left">All posts:</h2>
-        {posts.map(post => (
-          <article
-            className="markdown-preview pb-5 border-b my-5 text-left"
-            dangerouslySetInnerHTML={{ __html: post }}
-          ></article>
-        ))}
-      </section>
-    )
-  }
-
   if (contentURL) {
     return (
       <div style={{ maxWidth: 450, margin: '0 auto' }}>{renderSuccess()}</div>
@@ -92,8 +67,17 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
 
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
-      <TextArea onSubmit={onSubmit} />
-      {renderPosts()}
+      {isEditing ? (
+        <TextArea onCancel={() => setIsEditing(false)} onSubmit={onSubmit} />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setIsEditing(true)}
+          className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          New Post
+        </button>
+      )}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import PageLayout from './PageLayout'
 import Home from './Home'
+import Hero from './components/Hero'
 
 function App() {
   return (
