@@ -38,6 +38,7 @@ export const generate = ({ hashes, ens }) => `
         left: 2%;
         background-color: #fff;
         border: 1px solid rgb(229, 231, 235);
+        overflow-y: scroll;
       }
 
       header,

@@ -134,7 +134,7 @@ function Home() {
     return (
       <Blog
         callback={updateContentHash}
-        ensName={manualEnsName}
+        ensName={ensName || manualEnsName}
         existingPosts={savedPostsHashes}
       />
     )
@@ -186,7 +186,7 @@ function Home() {
           <div className="mt-8">
             <Blog
               callback={updateContentHash}
-              ensName={manualEnsName}
+              ensName={ensName || manualEnsName}
               existingPosts={savedPostsHashes}
             />
           </div>
@@ -215,7 +215,7 @@ function Home() {
           <div className="mt-8">
             <Blog
               callback={updateContentHash}
-              ensName={ensName}
+              ensName={ensName || manualEnsName}
               existingPosts={savedPostsHashes}
             />
           </div>

@@ -27,8 +27,11 @@ const Blog = ({ callback, ensName, existingPosts }) => {
     return (
       <section style={{ maxWidth: 750, margin: '0 auto' }}>
         <h2 className="text-left"></h2>
-        {posts.map(post => (
-          <Post html={post} />
+        {posts.map((post, i) => (
+          <Post
+            key={existingPosts[i]}
+            html={post}
+          />
         ))}
       </section>
     )
