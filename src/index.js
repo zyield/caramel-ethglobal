@@ -28,10 +28,8 @@ if (!window.Buffer) {
   window.Buffer = Buffer
 }
 
-const network = process.env.REACT_APP_NETWORK || 'mainnet'
-
 const { chains, provider } = configureChains(
-  [chain[network]],
+  defaultChains,
   [
     alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }),
     publicProvider()

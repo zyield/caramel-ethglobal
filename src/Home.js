@@ -6,6 +6,7 @@ import {
   useContractRead,
   usePrepareContractWrite,
   useProvider,
+  useNetwork,
   useEnsName,
   useEnsAddress,
   useConnect,
@@ -19,6 +20,8 @@ import namehash from '@ensdomains/eth-ens-namehash'
 import multiH from 'multihashes'
 import multiC from 'multicodec'
 import CID from 'cids'
+
+import { addresses } from './utils'
 
 import Blog from './Blog'
 import Hero from './components/Hero'
@@ -54,6 +57,8 @@ const decodeContentHash = contentHash => {
 }
 
 function Home() {
+  const { chain } = useNetwork()
+
   const { address, isLoading, isConnected } = useAccount({ fetchEns: true })
   const { data: ensName } = useEnsName({ address })
 
@@ -62,8 +67,6 @@ function Home() {
   const [manualEnsName, setManualEnsName] = useState('')
   const [manualEnsValid, setManualEnsValid] = useState()
   const [savedPostsHashes, setPostHashes] = useState([])
-
-  console.log('saved hashes', savedPostsHashes)
 
   const toHex = d =>
     d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
@@ -74,7 +77,7 @@ function Home() {
 
   const { data, error, write } = useContractWrite({
     mode: 'recklesslyUnprepared',
-    addressOrName: process.env.REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS,
+    addressOrName: addresses[chain?.network]?.ens_public_resolver,
     contractInterface: PublicResolverABI,
     functionName: 'setContenthash',
     overrides: {
@@ -98,7 +101,7 @@ function Home() {
   }
 
   const { data: contentHash } = useContractRead({
-    addressOrName: process.env.REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS,
+    addressOrName: addresses[chain?.network]?.ens_public_resolver,
     contractInterface: PublicResolverABI,
     functionName: 'contenthash',
     args: [namehash.hash(ensName || manualEnsName)]
