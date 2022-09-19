@@ -135,11 +135,14 @@ function Home() {
 
   if (ensChecked || manualEnsValid) {
     return (
-      <Blog
-        callback={updateContentHash}
-        ensName={ensName || manualEnsName}
-        existingPosts={savedPostsHashes}
-      />
+      <div>
+        <Blog
+          callback={updateContentHash}
+          ensName={ensName || manualEnsName}
+          existingPosts={savedPostsHashes}
+        />
+        {data && data?.hash && <TransactionModal hash={data?.hash} />}
+      </div>
     )
   }
 
