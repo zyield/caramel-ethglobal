@@ -22,8 +22,7 @@ const Blog = ({ callback, ensName, existingPosts }) => {
     let newPosts = [...existingPosts]
 
     let index = newPosts.findIndex(p => p == hash)
-    if (index > -1)
-      newPosts.splice(index, 1)
+    if (index > -1) newPosts.splice(index, 1)
 
     let html = await generate({
       hashes: newPosts,
@@ -50,25 +49,20 @@ const Blog = ({ callback, ensName, existingPosts }) => {
     )
       .then(posts => posts.map(markdown => convert(markdown)))
       .then(setPosts)
-  }, [])
+  }, [existingPosts])
 
   const renderPosts = () => {
     if (!posts.length) return null
 
     return (
-      <section
-        style={{ maxWidth: 750, margin: '0 auto' }}
-      >
+      <section style={{ maxWidth: 750, margin: '0 auto' }}>
         {posts.map((post, i) => (
           <div className="relative">
             <RemoveButton
               onClick={() => setSelectedForRemoval(existingPosts[i])}
               className="absolute right-0 top-2"
             />
-            <Post
-              key={existingPosts[i]}
-              html={post}
-            />
+            <Post key={existingPosts[i]} html={post} />
           </div>
         ))}
       </section>
@@ -109,7 +103,7 @@ const Blog = ({ callback, ensName, existingPosts }) => {
         ensName={ensName}
         existingPosts={existingPosts}
       />
-      { contentURL && renderSuccess() }
+      {contentURL && renderSuccess()}
       {renderPosts()}
       <DeletePostModal
         onClickConfirm={RemovePost}
