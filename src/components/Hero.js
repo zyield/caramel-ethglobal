@@ -3,7 +3,7 @@ import mainLogoBlack from '../images/logo_black.svg'
 export default function Hero() {
   return (
     <div className="bg-white">
-      <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-14 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="flex justify-center">
             <img width="250" src={mainLogoBlack} alt="Caramel" />

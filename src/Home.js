@@ -34,6 +34,7 @@ import PublicResolverABI from './abis/PublicResolver.json'
 
 import { gateways } from './ipfs'
 import { extractHashes } from './blog/parser'
+import mainLogoBlack from './images/logo_black.svg'
 
 // stolen from
 // https://github.com/ensdomains/content-hash/blob/master/src/profiles.js
@@ -209,7 +210,12 @@ function Home() {
   if (isConnected)
     return (
       <div className="text-center">
-        <h2 className="text-xl mb-4">Which domain would you like to use ?</h2>
+        <h2 className="flex justify-center">
+          <img width="250" src={mainLogoBlack} alt="Caramel" />
+        </h2>
+        <h3 className="mt-10 text-xl mb-4">
+          Which domain would you like to use ?
+        </h3>
         <div className="flex justify-center">
           <EnsDomain
             domain={ensName}
