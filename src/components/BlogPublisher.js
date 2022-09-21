@@ -56,7 +56,10 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   }
 
   const renderSuccess = () => (
-    <div>
+      <div
+        className="text-center"
+        style={{ maxWidth: 450, margin: '0 auto' }}
+      >
       <ContentPopup url={contentURL} />
       <p className="mt-4">
         Note that it might take a few minutes for IPFS to update (
@@ -79,14 +82,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   )
 
   if (contentURL) {
-    return (
-      <div
-        className="text-center"
-        style={{ maxWidth: 450, margin: '0 auto' }}
-      >
-        {renderSuccess()}
-      </div>
-    )
+    return renderSuccess()
   }
 
   return (
