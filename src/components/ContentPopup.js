@@ -14,7 +14,7 @@ export default function ContentPopup({ url }) {
         </div>
         <div className="ml-3">
           <p className="break-all text-sm font-medium text-green-800 text-center">
-            Successfully uploaded the latest version to {'\n'}
+            Successfully uploaded to {'\n'}
             <a href={url} target="_blank" rel="noreferrer">
               {url}
             </a>

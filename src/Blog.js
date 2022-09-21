@@ -98,12 +98,12 @@ const Blog = ({ callback, ensName, existingPosts }) => {
 
   return (
     <>
+      {contentURL && renderSuccess()}
       <BlogPublisher
         callback={callback}
         ensName={ensName}
         existingPosts={existingPosts}
       />
-      {contentURL && renderSuccess()}
       {renderPosts()}
       <DeletePostModal
         onClickConfirm={RemovePost}
