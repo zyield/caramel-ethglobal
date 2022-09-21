@@ -6,9 +6,7 @@ import {
   isValidContenthash
 } from './content_hash'
 
-import {
-  addresses
-} from './network'
+import { addresses } from './network'
 
 const truncateAddress = address => {
   let beginning = address.slice(0, 5)

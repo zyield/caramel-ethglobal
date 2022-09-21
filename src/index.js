@@ -28,13 +28,10 @@ if (!window.Buffer) {
   window.Buffer = Buffer
 }
 
-const { chains, provider } = configureChains(
-  defaultChains,
-  [
-    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }),
-    publicProvider()
-  ]
-)
+const { chains, provider } = configureChains(defaultChains, [
+  alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }),
+  publicProvider()
+])
 
 const wagmiClient = createClient({
   autoConnect: true,
