@@ -24,17 +24,17 @@ function Account({ display_connect_button }) {
     return (
       <div className="flex justify-center items-right mt-4 mr-4">
         <div
-          className="text-white flex bg-white shadow hover:bg-gray-50 px-3 py-2 rounded-r-md rounded-l-md justify-between items-center cursor-pointer px-2"
+          className="flex dark:bg-zinc-800 dark:text-zinc-400 text-center shadow hover:bg-zinc-600 px-3 py-2 rounded-r-md rounded-l-md justify-between items-center cursor-pointer px-2"
           onClick={() => setOpen(true)}
         >
-          <div className="text-gray-800 ml-2">
+          <div className="text-zinc-400 ml-2">
             {ensName ? ensName : truncateAddress(address)}
           </div>
           <div className="flex items-center ml-2">
             <div>
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
             </div>
-            <div className="text-gray-800 ml-2 text-xs">
+            <div className="text-zinc-400 ml-2 text-xs">
               {chain?.name === 'Chain 1' ? 'Mainnet' : chain?.name}
             </div>
           </div>

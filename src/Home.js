@@ -34,7 +34,7 @@ import PublicResolverABI from './abis/PublicResolver.json'
 
 import { gateways } from './ipfs'
 import { extractHashes } from './blog/parser'
-import mainLogoBlack from './images/logo_black.svg'
+import mainLogoWhite from './images/logo_white.svg'
 
 // stolen from
 // https://github.com/ensdomains/content-hash/blob/master/src/profiles.js
@@ -127,7 +127,7 @@ function Home() {
         <div className="flex justify-center">
           <Connect
             button_text="Get Started"
-            custom_style="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            custom_style="bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 rounded-md py-2 px-3 text-lg outline-offset-2 transition active:transition-none"
           />
         </div>
       </div>
@@ -174,7 +174,7 @@ function Home() {
                 type="text"
                 name="ens"
                 id="ens"
-                className="text-2xl py-3 pl-6 pr-8 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="text-2xl py-3 pl-6 pr-8 w-full rounded-md shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
                 placeholder="johndoe.eth"
               />
             </div>
@@ -182,7 +182,7 @@ function Home() {
               <button
                 onClick={handleEnsLookup}
                 type="button"
-                className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 align-baseline ml-4"
+                className="bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
               >
                 Look-up
               </button>
@@ -209,9 +209,9 @@ function Home() {
 
   if (isConnected)
     return (
-      <div className="text-center">
+      <div className="dark:text-zinc-400 text-center">
         <h2 className="flex justify-center">
-          <img width="250" src={mainLogoBlack} alt="Caramel" />
+          <img width="250" src={mainLogoWhite} alt="Caramel" />
         </h2>
         <h3 className="mt-10 text-xl mb-4">
           Which domain would you like to use ?
