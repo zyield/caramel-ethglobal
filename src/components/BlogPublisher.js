@@ -17,7 +17,7 @@ import { convert } from '../blog/converter'
 const ActionHeading = ({ ensName, onNewPost }) => (
   <div className="md:flex md:items-center md:justify-between">
     <div className="min-w-0 flex-1">
-      <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+      <h2 className="text-2xl font-bold leading-7 text-zinc-800 dark:text-zinc-100 sm:truncate sm:text-3xl sm:tracking-tight">
         {ensName}
       </h2>
     </div>
@@ -25,7 +25,7 @@ const ActionHeading = ({ ensName, onNewPost }) => (
       <button
         type="button"
         onClick={onNewPost}
-        className="ml-3 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
       >
         New Post
       </button>

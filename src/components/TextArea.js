@@ -39,20 +39,14 @@ export default function TextArea({ onSubmit, onCancel }) {
 
   return (
     <form className="w-full" onSubmit={handleSumit}>
-      <div className="relative rounded-md border border-gray-300 px-3 py-2 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600">
-        <label
-          htmlFor="title"
-          className="absolute -top-2 left-2 -mt-px inline-block bg-white px-1 text-xs font-medium text-gray-900"
-        >
-          Title
-        </label>
+      <div className="relative flex flex-col text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         <input
           type="text"
           name="title"
           onChange={e => setTitle(e.target.value)}
           id="title"
-          className="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm"
-          placeholder="My perfect post"
+          className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
+          placeholder="Title"
         />
       </div>
       <Tab.Group>
@@ -63,8 +57,8 @@ export default function TextArea({ onSubmit, onCancel }) {
                 className={({ selected }) =>
                   classNames(
                     selected
-                      ? 'text-gray-900 bg-gray-100 hover:bg-gray-200'
-                      : 'text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-100',
+                      ? 'bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70'
+                      : 'bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70',
                     'rounded-md border border-transparent px-3 py-1.5 text-sm font-medium'
                   )
                 }
@@ -75,8 +69,8 @@ export default function TextArea({ onSubmit, onCancel }) {
                 className={({ selected }) =>
                   classNames(
                     selected
-                      ? 'text-gray-900 bg-gray-100 hover:bg-gray-200'
-                      : 'text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-100',
+                      ? 'bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70'
+                      : 'bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70',
                     'ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium'
                   )
                 }
@@ -103,17 +97,17 @@ export default function TextArea({ onSubmit, onCancel }) {
                         onChange={e => setText(e.target.value)}
                         name="comment"
                         id="comment"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="w-full min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
                         placeholder="Add your text..."
                         value={text}
                       />
                     </div>
                   </Tab.Panel>
                   <Tab.Panel className="-m-0.5 rounded-lg p-0.5">
-                    <div className="border-b">
+                    <div className="border-b dark:border-zinc-700/40">
                       <div className="mx-px mt-px px-3 pt-2 pb-12 text-sm leading-5 text-gray-800">
                         <div
-                          className="markdown-preview text-left"
+                          className="markdown-preview dark:text-zinc-400 text-left"
                           dangerouslySetInnerHTML={{
                             __html:
                               selectedIndex == 1 ? convert(text) : 'Preview'
@@ -132,14 +126,14 @@ export default function TextArea({ onSubmit, onCancel }) {
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="ml-5 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="ml-5 bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
         >
           Publish
         </button>

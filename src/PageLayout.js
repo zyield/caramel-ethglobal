@@ -4,17 +4,17 @@ import Account from './components/Account'
 import Hero from './components/Hero'
 import Footer from './components/Footer'
 
+import { SimpleLayout } from './theme/SimpleLayout'
+
 function PageLayout() {
   return (
-    <div>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <Account display_connect_button={false} />
-        <div className="mt-10">
-          <Outlet />
-        </div>
+    <SimpleLayout className="dark">
+      <Account display_connect_button={false} />
+      <div className="mt-10">
+        <Outlet />
       </div>
       <Footer />
-    </div>
+    </SimpleLayout>
   )
 }
 

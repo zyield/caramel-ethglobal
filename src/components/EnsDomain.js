@@ -10,10 +10,8 @@ function EnsDomain({ domain, checked, setChecked }) {
     <div
       onClick={() => setChecked(!checked)}
       className={classNames(
-        !checked
-          ? 'border-gray-200'
-          : 'border-indigo-500 ring-1 ring-indigo-500',
-        'border border-gray-200 shadow-sm bg-white p-3 rounded-lg text-gray-800 text-lg font-medium rounded-l-md relative hover:border-indigo-500 hover:ring-1 hover:ring-indigo-500 cursor-pointer w-1/4 text-center'
+        !checked ? '' : '',
+        'transition group-hover:scale-100 group-hover:opacity-100 dark:bg-zinc-800/50 py-2 w-1/4 sm:rounded-2xl text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100 cursor-pointer hover:border-zinc-800/80 hover:ring-zinc-200 hover:ring-1 shadow-sm border border-zinc-100 p-6 dark:border-zinc-700/40"'
       )}
     >
       <CheckCircleIcon
