@@ -79,7 +79,7 @@ export default function TextArea({ onSubmit, onCancel }) {
               </Tab>
               <a
                 onClick={() => setOpen(true) }
-                className='cursor-pointer hover:bg-gray-100 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right'
+                className='text-zinc-100 cursor-pointer hover:bg-zinc-600 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right'
               >
                 <img src={markdown_logo} />
               </a>
