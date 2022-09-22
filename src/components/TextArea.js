@@ -8,6 +8,10 @@ import {
 
 import { convert } from '../blog/converter'
 
+import markdown_logo from '../images/markdown.svg'
+
+import MarkdownSyntaxModal from './MarkdownSyntaxModal'
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -16,6 +20,8 @@ export default function TextArea({ onSubmit, onCancel }) {
   const [text, setText] = useState('')
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const [open, setOpen] = useState(false)
 
   const handleSumit = async e => {
     e.preventDefault()
@@ -77,6 +83,12 @@ export default function TextArea({ onSubmit, onCancel }) {
               >
                 Preview
               </Tab>
+              <a
+                onClick={() => setOpen(true) }
+                className='cursor-pointer hover:bg-gray-100 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right'
+              >
+                <img src={markdown_logo} />
+              </a>
             </Tab.List>
             <Tab.Panels className="mt-2">
               {({ selectedIndex }) => (
@@ -132,6 +144,7 @@ export default function TextArea({ onSubmit, onCancel }) {
           Publish
         </button>
       </div>
+      <MarkdownSyntaxModal open={open} setOpen={setOpen} />
     </form>
   )
 }
