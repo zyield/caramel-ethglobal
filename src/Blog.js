@@ -72,7 +72,7 @@ const Blog = ({ callback, ensName, existingPosts }) => {
   // TODO: extract in component, duplicated from Publisher
   const renderSuccess = () => (
     <div
-      className="text-center mt-10"
+      className="text-center text-zinc-100 mt-10"
       style={{ maxWidth: 450, margin: '0 auto' }}
     >
       <ContentPopup url={contentURL} />
