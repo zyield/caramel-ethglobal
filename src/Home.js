@@ -149,7 +149,7 @@ function Home() {
 
   if (!ensName)
     return (
-      <div className="text-center">
+      <div className="text-zinc-100 text-center">
         <h2 className="text-xl mb-4">
           We couldn't detect an ENS domain for your address
         </h2>
@@ -174,7 +174,7 @@ function Home() {
                 type="text"
                 name="ens"
                 id="ens"
-                className="text-2xl py-3 pl-6 pr-8 w-full rounded-md shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+                className="text-2xl flex-auto appearance-none rounded-md border px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
                 placeholder="johndoe.eth"
               />
             </div>
@@ -182,7 +182,7 @@ function Home() {
               <button
                 onClick={handleEnsLookup}
                 type="button"
-                className="bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
+                className="ml-5 bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
               >
                 Look-up
               </button>
