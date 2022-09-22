@@ -82,7 +82,25 @@ export const generate = ({ hashes, ens }) => `
   </body>
 
   <script>
-    const converter = new showdown.Converter()
+    let opts = {
+      'omitExtraWLInCodeBlocks': true,
+      'noHeaderId': false,
+      'parseImgDimensions': true,
+      'simplifiedAutoLink': true,
+      'literalMidWordUnderscores': true,
+      'strikethrough': true,
+      'tables': true,
+      'tablesHeaderId': false,
+      'ghCodeBlocks': true,
+      'tasklists': true,
+      'smoothLivePreview': true,
+      'prefixHeaderId': false,
+      'disableForced4SpacesIndentedSublists': false,
+      'ghCompatibleHeaderId': true,
+      'smartIndentationFix': false
+    }
+
+    const converter = new showdown.Converter(opts)
 
     let hashes = ${JSON.stringify(hashes)}
 

@@ -1,8 +1,19 @@
-# Getting Started with Create React App
+# Caramel decentralized ENS blogging
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This dApp is self-contained and the only depedencies are Infura (for ipfs gateway)
+and Alchemy for JSON-RPC calls.
 
-## Available Scripts
+You need to setup the following in your .env
+
+```
+REACT_APP_ALCHEMY_API_KEY=
+REACT_APP_INFURA_USERNAME=
+REACT_APP_INFURA_SECRET=
+REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS_GOERLI=0x4b1488b7a6b320d2d721406204abc3eeaa9ad329
+REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS_MAINNET=0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41
+```
+
+## Start the app
 
 In the project directory, you can run:
 
