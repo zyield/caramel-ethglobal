@@ -315,16 +315,16 @@ function getDomainInformation(chainId, verifyingContract) {
 
 function unSubscribe(address, chainId) {
 
-  let { channelAddress, contractAddress, subdomain } = addresses(chainId)
+  let { channelAddress, contractAddress, subdomain } = addresses(chainId);
 
-  const channelAddressEIP = `eip155:${chainId}:${channelAddress}`
-  const userAddressEIP = `eip155:${chainId}:${address}`
+  const channelAddressEIP = "eip155:" + chainId+ ":"+ channelAddress";
+  const userAddressEIP = "eip155:" + chainId + ":" + address;
 
   const domainInformation = getDomainInformation(chainId, contractAddress);
   const typeInformation = getTypeInformation("Unsubscribe");
   const messageInformation = getSubscriptionMessage(channelAddress, address, "Unsubscribe")
 
-  let url = `https://${subdomain}.epns.io/apis/v1/channels/eip155:${chainId}:${channelAddress}/unsubscribe`
+  let url = "https://" + subdomain ".epns.io/apis/v1/channels/eip155:" + chainId + ":" + channelAddress + "/unsubscribe"
 
   const signer = (new ethers.providers.Web3Provider(window.ethereum)).getSigner()
 
@@ -363,14 +363,14 @@ function unSubscribe(address, chainId) {
 function subscribe(address, chainId) {
   let { channelAddress, contractAddress, subdomain } = addresses(chainId)
 
-  const channelAddressEIP = `eip155:${chainId}:${channelAddress}`
-  const userAddressEIP = `eip155:${chainId}:${address}`
+  const channelAddressEIP = "eip155:" + chainId+ ":"+ channelAddress";
+  const userAddressEIP = "eip155:" + chainId + ":" + address;
 
   const domainInformation = getDomainInformation(chainId, contractAddress);
   const typeInformation = getTypeInformation("Subscribe");
   const messageInformation = getSubscriptionMessage(channelAddress, address, "Subscribe")
 
-  let url = `https://${subdomain}.epns.io/apis/v1/channels/eip155:${chainId}:${channelAddress}/subscribe`
+  let url = "https://" + subdomain ".epns.io/apis/v1/channels/eip155:" + chainId + ":" + channelAddress + "/subscribe"
 
   const signer = (new ethers.providers.Web3Provider(window.ethereum)).getSigner()
 
@@ -447,7 +447,7 @@ function checkIfSubscribed(address, chainId, callback) {
   let { channelAddress, subdomain } = addresses(chainId)
 
   // check if subscribed
-  fetch(`https://${subdomain}.epns.io/apis/channels/_search`, {
+  fetch("https://" + subdomain + ".epns.io/apis/channels/_search"}, {
         method: "POST",
         headers: {
               'Content-Type': 'application/json'
@@ -475,7 +475,7 @@ if (signer) {
                   let { chainId, name } = network
 
                 if (address && name) {
-                      walletID.innerHTML = `${address} (${name})`
+                      walletID.innerHTML = "" + address + "( " + name + " )"
                 }
 
                 checkIfSubscribed(address, chainId, function(channel, addresses) {
