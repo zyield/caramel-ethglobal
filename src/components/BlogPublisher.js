@@ -13,6 +13,7 @@ import {
 import storage from '../storage'
 import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
+import { useAccount } from 'wagmi'
 
 const ActionHeading = ({ ensName, onNewPost }) => (
   <div className="md:flex md:items-center md:justify-between">
@@ -33,17 +34,19 @@ const ActionHeading = ({ ensName, onNewPost }) => (
   </div>
 )
 
-function BlogPublisher({ callback, ensName, existingPosts = [] }) {
+function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
   const [isEditing, setIsEditing] = useState(false)
+  const { address } = useAccount()
 
   const onSubmit = async text => {
     // magic happens here
     let mdResponse = await uploadMarkdown(text)
     let html = await generate({
       hashes: [mdResponse.Hash, ...existingPosts],
-      ens: ensName
+      ens: ensName,
+      channelAddress: address
     })
     let response = await uploadHTML(html)
 
@@ -92,6 +95,9 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
           onCancel={() => setIsEditing(false)}
           onSubmit={onSubmit}
           contentURL={contentURL}
+          notificationsEnabled={notificationsEnabled}
+          setNotificationsEnabled={setNotificationsEnabled}
+          setNotificationTitle={setNotificationTitle}
         />
       ) : (
         <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />

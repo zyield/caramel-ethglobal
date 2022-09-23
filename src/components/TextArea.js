@@ -17,16 +17,17 @@ import SendEPNSNotificationsToggle from './SendEPNSNotificationsToggle'
 import { addresses } from '../utils'
 
 import { ethers } from 'ethers'
-import { useContractRead, useNetwork, useAccount } from 'wagmi'
+import { useContractRead, useNetwork, useAccount, useSigner } from 'wagmi'
 
 import EPNSCoreProxy from '../abis/EPNSCoreProxy.json'
 import ERC20 from '../abis/ERC20.json'
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TextArea({ onSubmit, onCancel, contentURL }) {
+export default function TextArea({ onSubmit, onCancel, contentURL, notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) {
   const [text, setText] = useState('')
   const [title, setTitle] = useState('')
   const [open, setOpen] = useState(false)
@@ -34,7 +35,6 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
   const [userHasChannel, setUserHasChannel] = useState()
   const [daiBalance, setDaiBalance] = useState()
   const [loading, setLoading] = useState(false)
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
 
   const { chain } = useNetwork()
   const { address, isLoading, isConnected } = useAccount()
@@ -70,7 +70,7 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
     }
   })
 
-  const handleSumit = async e => {
+  const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
 
@@ -79,41 +79,23 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
       payload = `# ${title}\n${text}`
     }
 
-    if (notificationsEnabled) {
-      await broadcastNotification(title)
-    }
-
     await onSubmit(payload)
-
     setLoading(false)
   }
 
-  const broadcastNotification = text => {
-    let url = 'https://epns-service.herokuapp.com/broadcast'
-    let payload = {
-      title: text,
-      body: 'Please visit my blog to read my new article',
-      cta: contentURL
-    }
-
-    return fetch(url, {
-      body: JSON.stringify(payload),
-      method: 'POST',
-      headers: {
-        token: 'Ner_awt-CJ@TWUTi!nF2'
-      }
-    })
-      .then(res => res.json())
-      .then(({ status }) => console.log(status))
+  const handleTitleChange = (title) => {
+    setTitle(title)
+    setNotificationTitle(title)
   }
 
+
   return (
-    <form className="w-full" onSubmit={handleSumit}>
+    <form className="w-full" onSubmit={handleSubmit}>
       <div className="relative flex flex-col text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         <input
           type="text"
           name="title"
-          onChange={e => setTitle(e.target.value)}
+          onChange={e => handleTitleChange(e.target.value)}
           id="title"
           className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
           placeholder="Title"

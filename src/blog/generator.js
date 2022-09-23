@@ -1,7 +1,7 @@
 // gets array of posts
 // generates html
 
-export const generate = ({ hashes, ens }) => `
+export const generate = ({ hashes, ens, channelAddress }) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -251,13 +251,13 @@ hide(optOutButton)
 const addresses = (chainId) => {
   if (chainId === 1) {
     return {
-      channelAddress: "0xBA840BBa552cAf4A4EC61E78DcdB00194CF7A9a0",
+      channelAddress: "${channelAddress}",
       contractAddress: "0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa",
       subdomain: "backend",
     }
   } else if (chainId === 42) {
     return {
-      channelAddress: "0xBA840BBa552cAf4A4EC61E78DcdB00194CF7A9a0",
+      channelAddress: "${channelAddress}",
       contractAddress: "0x87da9Af1899ad477C67FeA31ce89c1d2435c77DC",
       subdomain: "backend-staging"
     }

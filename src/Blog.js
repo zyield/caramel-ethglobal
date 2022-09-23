@@ -9,11 +9,14 @@ import { generate } from './blog/generator'
 import { convert } from './blog/converter'
 import { gateways, uploadHTML } from './ipfs'
 
-const Blog = ({ callback, ensName, existingPosts }) => {
+import { useAccount } from 'wagmi'
+
+const Blog = ({ callback, ensName, existingPosts, notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) => {
   const [contentURL, setContentURL] = useState(null)
   const [posts, setPosts] = useState([])
   const [ipfsHash, setIpfsHash] = useState()
   const [selectedForRemoval, setSelectedForRemoval] = useState(null)
+  const { address } = useAccount()
 
   let deleteModalOpen = Boolean(selectedForRemoval)
 
@@ -26,7 +29,8 @@ const Blog = ({ callback, ensName, existingPosts }) => {
 
     let html = await generate({
       hashes: newPosts,
-      ens: ensName
+      ens: ensName,
+      channelAddress: address
     })
 
     let response = await uploadHTML(html)
@@ -103,6 +107,9 @@ const Blog = ({ callback, ensName, existingPosts }) => {
         callback={callback}
         ensName={ensName}
         existingPosts={existingPosts}
+        notificationsEnabled={notificationsEnabled}
+        setNotificationsEnabled={setNotificationsEnabled}
+        setNotificationTitle={setNotificationTitle}
       />
       {renderPosts()}
       <DeletePostModal

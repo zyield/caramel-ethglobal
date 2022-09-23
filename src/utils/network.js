@@ -10,5 +10,9 @@ export const addresses = {
       process.env.REACT_APP_ENS_PUBLIC_RESOLVER_ADDRESS_GOERLI,
     epns_core: process.env.REACT_APP_EPNS_CORE_ADDRESS_GOERLI,
     dai: process.env.REACT_APP_DAI_ADDRESS_GOERLI
+  },
+  kovan: {
+    epns_core: process.env.REACT_APP_EPNS_CORE_ADDRESS_KOVAN,
+    dai: process.env.REACT_APP_DAI_ADDRESS_KOVAN
   }
 }

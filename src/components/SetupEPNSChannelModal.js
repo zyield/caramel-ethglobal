@@ -95,16 +95,11 @@ export default function SetupEPNSChannelModal({
       return step
     })
 
-    if (allComplete(updatedSteps)) setDone(true)
-
-    setSteps(updatedSteps)
+      if (allComplete(updatedSteps)) setDone(true)
+      setSteps(updatedSteps)
   }
 
   const pickName = () => moveOn()
-
-  console.log("approveDaiError", approveDaiError)
-  console.log("addresses[chain?.network]?.dai", addresses[chain?.network]?.dai)
-  console.log("ensCoreAddress", epnsCoreAddress)
 
   const approveDai = async () => {
     // approve DAI tx
