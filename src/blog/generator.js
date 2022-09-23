@@ -317,7 +317,7 @@ function unSubscribe(address, chainId) {
 
   let { channelAddress, contractAddress, subdomain } = addresses(chainId);
 
-  const channelAddressEIP = "eip155:" + chainId+ ":"+ channelAddress";
+  const channelAddressEIP = "eip155:" + chainId+ ":"+ channelAddress;
   const userAddressEIP = "eip155:" + chainId + ":" + address;
 
   const domainInformation = getDomainInformation(chainId, contractAddress);
@@ -363,7 +363,7 @@ function unSubscribe(address, chainId) {
 function subscribe(address, chainId) {
   let { channelAddress, contractAddress, subdomain } = addresses(chainId)
 
-  const channelAddressEIP = "eip155:" + chainId+ ":"+ channelAddress";
+  const channelAddressEIP = "eip155:" + chainId+ ":"+ channelAddress;
   const userAddressEIP = "eip155:" + chainId + ":" + address;
 
   const domainInformation = getDomainInformation(chainId, contractAddress);
