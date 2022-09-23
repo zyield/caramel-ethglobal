@@ -231,6 +231,7 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
         open={openEPNSSetup}
         setOpen={setOpenEPNSSetup}
         daiBalance={daiBalance}
+        chain={chain}
       />
     </form>
   )

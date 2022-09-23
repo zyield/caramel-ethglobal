@@ -6,6 +6,18 @@ import AlertError from './AlertError'
 import AlertSuccess from './AlertSuccess'
 import Stepper from './Stepper'
 
+import ERC20 from '../abis/ERC20.json'
+import EPNSCoreProxy from '../abis/EPNSCoreProxy.json'
+
+import { addresses } from '../utils'
+import { ethers } from 'ethers'
+
+import TransactionModal from './TransactionModal'
+
+import {
+  useContractWrite
+} from 'wagmi'
+
 const baseSteps = [
   { name: 'Pick a name', href: '#', status: 'current' },
   { name: 'Approve DAI', href: '#', status: 'upcoming' },
@@ -20,17 +32,41 @@ const deepishCopy = array => {
   })
 }
 
+
+
 export default function SetupEPNSChannelModal({
   open,
   setOpen,
   address,
-  daiBalance
+  daiBalance,
+  chain
 }) {
   const [steps, setSteps] = useState(deepishCopy(baseSteps))
   const [done, setDone] = useState(false)
   const [channelName, setChannelName] = useState('')
 
   let currentStep = steps.find(({ status }) => status == 'current')
+
+  let epnsCoreAddress = addresses[chain?.network]?.epns_core
+
+  const { data: approveDaiData, error: approveDaiError, write: approveDaiWrite } = useContractWrite({
+    mode: 'recklesslyUnprepared',
+    addressOrName: addresses[chain?.network]?.dai,
+    contractInterface: ERC20,
+    functionName: 'approve',
+    args: [epnsCoreAddress, ethers.utils.parseUnits("50", 18)]
+  })
+
+  const { data: createChannelData, error: createChannelError, write: createChannelWrite } = useContractWrite({
+    mode: 'recklesslyUnprepared',
+    addressOrName: addresses[chain?.network]?.epns_core,
+    contractInterface: EPNSCoreProxy,
+    functionName: 'createChannelWithFees',
+    args: [2, ethers.utils.toUtf8Bytes(channelName), ethers.utils.parseUnits("50", 18)],
+    overrides: {
+      gasLimit: 1000000
+    }
+  })
 
   // shouldn't need this really
   const resetState = () => {
@@ -66,14 +102,24 @@ export default function SetupEPNSChannelModal({
 
   const pickName = () => moveOn()
 
-  const approveDai = () => {
+  console.log("approveDaiError", approveDaiError)
+  console.log("addresses[chain?.network]?.dai", addresses[chain?.network]?.dai)
+  console.log("ensCoreAddress", epnsCoreAddress)
+
+  const approveDai = async () => {
     // approve DAI tx
+
+    await approveDaiWrite?.({ recklesslySetUnpreparedArgs: [epnsCoreAddress, ethers.utils.parseUnits("50", 18)] })
+
     console.log('approving dai step action ')
     moveOn()
   }
 
-  const createChannel = () => {
+  const createChannel = async () => {
     // createChannelTX
+
+    await createChannelWrite?.({ recklesslySetUnpreparedArgs: [2, ethers.utils.toUtf8Bytes(channelName), ethers.utils.parseUnits("50", 18)]})
+
     console.log('creating channel step action')
     moveOn()
   }
@@ -219,6 +265,14 @@ export default function SetupEPNSChannelModal({
               </Transition.Child>
             </div>
           </div>
+          {
+            approveDaiData && approveDaiData?.hash &&
+            <TransactionModal hash={approveDaiData?.hash} />
+          }
+          {
+            createChannelData && createChannelData?.hash &&
+            <TransactionModal hash={createChannelData?.hash} />
+          }
         </div>
       </Dialog>
     </Transition.Root>
