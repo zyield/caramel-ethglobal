@@ -324,7 +324,7 @@ function unSubscribe(address, chainId) {
   const typeInformation = getTypeInformation("Unsubscribe");
   const messageInformation = getSubscriptionMessage(channelAddress, address, "Unsubscribe")
 
-  let url = "https://" + subdomain ".epns.io/apis/v1/channels/eip155:" + chainId + ":" + channelAddress + "/unsubscribe"
+  let url = "https://" + subdomain + ".epns.io/apis/v1/channels/eip155:" + chainId + ":" + channelAddress + "/unsubscribe"
 
   const signer = (new ethers.providers.Web3Provider(window.ethereum)).getSigner()
 
@@ -370,7 +370,7 @@ function subscribe(address, chainId) {
   const typeInformation = getTypeInformation("Subscribe");
   const messageInformation = getSubscriptionMessage(channelAddress, address, "Subscribe")
 
-  let url = "https://" + subdomain ".epns.io/apis/v1/channels/eip155:" + chainId + ":" + channelAddress + "/subscribe"
+  let url = "https://" + subdomain + ".epns.io/apis/v1/channels/eip155:" + chainId + ":" + channelAddress + "/subscribe"
 
   const signer = (new ethers.providers.Web3Provider(window.ethereum)).getSigner()
 
