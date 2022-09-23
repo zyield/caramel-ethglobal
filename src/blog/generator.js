@@ -447,7 +447,7 @@ function checkIfSubscribed(address, chainId, callback) {
   let { channelAddress, subdomain } = addresses(chainId)
 
   // check if subscribed
-  fetch("https://" + subdomain + ".epns.io/apis/channels/_search"}, {
+  fetch("https://" + subdomain + ".epns.io/apis/channels/_search", {
         method: "POST",
         headers: {
               'Content-Type': 'application/json'
