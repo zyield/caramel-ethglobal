@@ -11,19 +11,66 @@ import { convert } from '../blog/converter'
 import markdown_logo from '../images/markdown.svg'
 
 import MarkdownSyntaxModal from './MarkdownSyntaxModal'
+import SetupEPNSChannelModal from './SetupEPNSChannelModal'
+
+import SendEPNSNotificationsToggle from './SendEPNSNotificationsToggle'
+import { addresses } from '../utils'
+
+import { ethers } from 'ethers'
+import { useContractRead, useNetwork, useAccount, useSigner } from 'wagmi'
+
+import EPNSCoreProxy from '../abis/EPNSCoreProxy.json'
+import ERC20 from '../abis/ERC20.json'
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TextArea({ onSubmit, onCancel }) {
+export default function TextArea({ onSubmit, onCancel, contentURL, notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) {
   const [text, setText] = useState('')
   const [title, setTitle] = useState('')
+  const [open, setOpen] = useState(false)
+  const [openEPNSSetup, setOpenEPNSSetup] = useState(false)
+  const [userHasChannel, setUserHasChannel] = useState()
+  const [daiBalance, setDaiBalance] = useState()
   const [loading, setLoading] = useState(false)
 
-  const [open, setOpen] = useState(false)
+  const { chain } = useNetwork()
+  const { address, isLoading, isConnected } = useAccount()
 
-  const handleSumit = async e => {
+  const {
+    data: channelsData,
+    isError: isErrorChannels,
+    isLoading: isLoadingChannels
+  } = useContractRead({
+    addressOrName: addresses[chain?.network]?.epns_core,
+    contractInterface: EPNSCoreProxy,
+    functionName: 'channels',
+    args: [address],
+    onSuccess(data) {
+      if (data && data.channelState === 1) {
+        setUserHasChannel(true)
+      }
+    }
+  })
+
+  const {
+    data: daiBalanceData,
+    error: getBalanceError,
+    status: getStatus
+  } = useContractRead({
+    addressOrName: addresses[chain?.network]?.dai,
+    contractInterface: ERC20,
+    functionName: 'balanceOf',
+    args: [address],
+    onSuccess(data) {
+      let balance = ethers.utils.formatUnits(data, 18)
+      setDaiBalance(balance)
+    }
+  })
+
+  const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
 
@@ -33,17 +80,22 @@ export default function TextArea({ onSubmit, onCancel }) {
     }
 
     await onSubmit(payload)
-
     setLoading(false)
   }
 
+  const handleTitleChange = (title) => {
+    setTitle(title)
+    setNotificationTitle(title)
+  }
+
+
   return (
-    <form className="w-full" onSubmit={handleSumit}>
+    <form className="w-full" onSubmit={handleSubmit}>
       <div className="relative flex flex-col text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         <input
           type="text"
           name="title"
-          onChange={e => setTitle(e.target.value)}
+          onChange={e => handleTitleChange(e.target.value)}
           id="title"
           className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
           placeholder="Title"
@@ -78,8 +130,8 @@ export default function TextArea({ onSubmit, onCancel }) {
                 Preview
               </Tab>
               <a
-                onClick={() => setOpen(true) }
-                className='text-zinc-100 cursor-pointer hover:bg-zinc-600 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right'
+                onClick={() => setOpen(true)}
+                className="text-zinc-100 cursor-pointer hover:bg-zinc-600 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right"
               >
                 <img src={markdown_logo} />
               </a>
@@ -122,23 +174,47 @@ export default function TextArea({ onSubmit, onCancel }) {
           </>
         )}
       </Tab.Group>
-      <div className="mt-2 flex justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={loading}
-          className="ml-5 bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
-        >
-          Publish
-        </button>
+      <div className="flex justify-between">
+        <div className="mt-2">
+          {userHasChannel ? (
+            <SendEPNSNotificationsToggle
+              enabled={notificationsEnabled}
+              setEnabled={setNotificationsEnabled}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setOpenEPNSSetup(true)}
+              className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
+            >
+              Setup EPNS Channel
+            </button>
+          )}
+        </div>
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="ml-5 bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
+          >
+            Publish
+          </button>
+        </div>
       </div>
       <MarkdownSyntaxModal open={open} setOpen={setOpen} />
+      <SetupEPNSChannelModal
+        open={openEPNSSetup}
+        setOpen={setOpenEPNSSetup}
+        daiBalance={daiBalance}
+        chain={chain}
+      />
     </form>
   )
 }
