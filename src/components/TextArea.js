@@ -11,17 +11,57 @@ import { convert } from '../blog/converter'
 import markdown_logo from '../images/markdown.svg'
 
 import MarkdownSyntaxModal from './MarkdownSyntaxModal'
+import SetupEPNSChannelModal from './SetupEPNSChannelModal'
+
+import SendEPNSNotificationsToggle from './SendEPNSNotificationsToggle'
+import { addresses } from '../utils'
+
+import { ethers } from 'ethers'
+import { useContractRead, useNetwork, useAccount } from 'wagmi'
+
+import EPNSCoreProxy from '../abis/EPNSCoreProxy.json'
+import ERC20 from '../abis/ERC20.json'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TextArea({ onSubmit, onCancel }) {
+export default function TextArea({ onSubmit, onCancel, contentURL }) {
   const [text, setText] = useState('')
   const [title, setTitle] = useState('')
-  const [loading, setLoading] = useState(false)
-
   const [open, setOpen] = useState(false)
+  const [openEPNSSetup, setOpenEPNSSetup] = useState(false)
+  const [userHasChannel, setUserHasChannel] = useState()
+  const [daiBalance, setDaiBalance] = useState()
+  const [loading, setLoading] = useState(false)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
+
+  const { chain } = useNetwork()
+  const { address, isLoading, isConnected } = useAccount()
+
+  const { data: channelsData, isError: isErrorChannels, isLoading: isLoadingChannels } = useContractRead({
+    addressOrName: addresses[chain?.network]?.epns_core,
+    contractInterface: EPNSCoreProxy,
+    functionName: 'channels',
+    args: [address],
+    onSuccess(data) {
+      if (data && data.channelState === 1) {
+        setUserHasChannel(true)
+      }
+    }
+  })
+
+  const { data: daiBalanceData, error: getBalanceError, status: getStatus } = useContractRead({
+    addressOrName: addresses[chain?.network]?.dai,
+    contractInterface: ERC20,
+    functionName: 'balanceOf',
+    args: [address],
+    onSuccess(data) {
+      let balance = ethers.utils.formatUnits(data, 18)
+      setDaiBalance(balance)
+    }
+  })
+
 
   const handleSumit = async e => {
     e.preventDefault()
@@ -32,9 +72,33 @@ export default function TextArea({ onSubmit, onCancel }) {
       payload = `# ${title}\n${text}`
     }
 
+    if (notificationsEnabled) {
+      await broadcastNotification(title)
+    }
+
     await onSubmit(payload)
 
     setLoading(false)
+  }
+
+  const broadcastNotification = (text) => {
+    let url = "https://epns-service.herokuapp.com/broadcast"
+    let payload = {
+      title: text,
+      body: 'Please visit my blog to read my new article',
+      cta: contentURL
+    }
+
+    return fetch(url, {
+      body: JSON.stringify(payload),
+      method: 'POST',
+      headers: {
+        'token': 'Ner_awt-CJ@TWUTi!nF2'
+      }
+    })
+      .then(res => res.json())
+      .then(({ status }) => console.log(status))
+
   }
 
   return (
@@ -122,23 +186,39 @@ export default function TextArea({ onSubmit, onCancel }) {
           </>
         )}
       </Tab.Group>
-      <div className="mt-2 flex justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={loading}
-          className="ml-5 bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
-        >
-          Publish
-        </button>
+      <div className="flex justify-between">
+        <div className="mt-2">
+          {
+            userHasChannel ?
+            <SendEPNSNotificationsToggle enabled={notificationsEnabled} setEnabled={setNotificationsEnabled} /> :
+            <button
+              type="button"
+              onClick={() => setOpenEPNSSetup(true) }
+              className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
+            >
+              Setup EPNS Channel
+            </button>
+          }
+        </div>
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="ml-5 bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none"
+          >
+            Publish
+          </button>
+        </div>
       </div>
       <MarkdownSyntaxModal open={open} setOpen={setOpen} />
+      <SetupEPNSChannelModal open={openEPNSSetup} setOpen={setOpenEPNSSetup} daiBalance={daiBalance} />
     </form>
   )
 }

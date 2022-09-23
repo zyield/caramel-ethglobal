@@ -85,7 +85,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
       {isEditing ? (
-        <TextArea onCancel={() => setIsEditing(false)} onSubmit={onSubmit} />
+        <TextArea onCancel={() => setIsEditing(false)} onSubmit={onSubmit} contentURL={contentURL} />
       ) : (
         <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
       )}
