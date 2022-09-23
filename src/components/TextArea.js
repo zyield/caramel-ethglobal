@@ -39,7 +39,11 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
   const { chain } = useNetwork()
   const { address, isLoading, isConnected } = useAccount()
 
-  const { data: channelsData, isError: isErrorChannels, isLoading: isLoadingChannels } = useContractRead({
+  const {
+    data: channelsData,
+    isError: isErrorChannels,
+    isLoading: isLoadingChannels
+  } = useContractRead({
     addressOrName: addresses[chain?.network]?.epns_core,
     contractInterface: EPNSCoreProxy,
     functionName: 'channels',
@@ -51,7 +55,11 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
     }
   })
 
-  const { data: daiBalanceData, error: getBalanceError, status: getStatus } = useContractRead({
+  const {
+    data: daiBalanceData,
+    error: getBalanceError,
+    status: getStatus
+  } = useContractRead({
     addressOrName: addresses[chain?.network]?.dai,
     contractInterface: ERC20,
     functionName: 'balanceOf',
@@ -61,7 +69,6 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
       setDaiBalance(balance)
     }
   })
-
 
   const handleSumit = async e => {
     e.preventDefault()
@@ -81,8 +88,8 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
     setLoading(false)
   }
 
-  const broadcastNotification = (text) => {
-    let url = "https://epns-service.herokuapp.com/broadcast"
+  const broadcastNotification = text => {
+    let url = 'https://epns-service.herokuapp.com/broadcast'
     let payload = {
       title: text,
       body: 'Please visit my blog to read my new article',
@@ -93,12 +100,11 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
       body: JSON.stringify(payload),
       method: 'POST',
       headers: {
-        'token': 'Ner_awt-CJ@TWUTi!nF2'
+        token: 'Ner_awt-CJ@TWUTi!nF2'
       }
     })
       .then(res => res.json())
       .then(({ status }) => console.log(status))
-
   }
 
   return (
@@ -142,8 +148,8 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
                 Preview
               </Tab>
               <a
-                onClick={() => setOpen(true) }
-                className='text-zinc-100 cursor-pointer hover:bg-zinc-600 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right'
+                onClick={() => setOpen(true)}
+                className="text-zinc-100 cursor-pointer hover:bg-zinc-600 ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium justify-end text-right align-right"
               >
                 <img src={markdown_logo} />
               </a>
@@ -188,17 +194,20 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
       </Tab.Group>
       <div className="flex justify-between">
         <div className="mt-2">
-          {
-            userHasChannel ?
-            <SendEPNSNotificationsToggle enabled={notificationsEnabled} setEnabled={setNotificationsEnabled} /> :
+          {userHasChannel ? (
+            <SendEPNSNotificationsToggle
+              enabled={notificationsEnabled}
+              setEnabled={setNotificationsEnabled}
+            />
+          ) : (
             <button
               type="button"
-              onClick={() => setOpenEPNSSetup(true) }
+              onClick={() => setOpenEPNSSetup(true)}
               className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-50 font-medium text-zinc-900 hover:bg-zinc-100 active:bg-zinc-100 active:text-zinc-900/60 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:active:bg-zinc-800/50 dark:active:text-zinc-50/70"
             >
               Setup EPNS Channel
             </button>
-          }
+          )}
         </div>
         <div className="mt-2">
           <button
@@ -218,7 +227,11 @@ export default function TextArea({ onSubmit, onCancel, contentURL }) {
         </div>
       </div>
       <MarkdownSyntaxModal open={open} setOpen={setOpen} />
-      <SetupEPNSChannelModal open={openEPNSSetup} setOpen={setOpenEPNSSetup} daiBalance={daiBalance} />
+      <SetupEPNSChannelModal
+        open={openEPNSSetup}
+        setOpen={setOpenEPNSSetup}
+        daiBalance={daiBalance}
+      />
     </form>
   )
 }

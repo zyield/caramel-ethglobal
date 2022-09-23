@@ -56,7 +56,10 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   }
 
   const renderSuccess = () => (
-    <div className="text-center text-zinc-100" style={{ maxWidth: 450, margin: '0 auto' }}>
+    <div
+      className="text-center text-zinc-100"
+      style={{ maxWidth: 450, margin: '0 auto' }}
+    >
       <ContentPopup url={contentURL} />
       <p className="mt-4">
         Note that it might take a few minutes for IPFS to update (
@@ -85,7 +88,11 @@ function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
       {isEditing ? (
-        <TextArea onCancel={() => setIsEditing(false)} onSubmit={onSubmit} contentURL={contentURL} />
+        <TextArea
+          onCancel={() => setIsEditing(false)}
+          onSubmit={onSubmit}
+          contentURL={contentURL}
+        />
       ) : (
         <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
       )}

@@ -5,7 +5,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function SendEPNSNotificationsToggle({enabled, setEnabled}) {
+export default function SendEPNSNotificationsToggle({ enabled, setEnabled }) {
   return (
     <Switch.Group as="div" className="flex items-center">
       <Switch
@@ -25,7 +25,9 @@ export default function SendEPNSNotificationsToggle({enabled, setEnabled}) {
         />
       </Switch>
       <Switch.Label as="span" className="ml-3">
-        <span className="text-sm font-medium text-gray-100">Notify my followers for the new post (EPNS)</span>
+        <span className="text-sm font-medium text-gray-100">
+          Notify my followers for the new post (EPNS)
+        </span>
       </Switch.Label>
     </Switch.Group>
   )

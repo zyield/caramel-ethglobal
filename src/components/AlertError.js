@@ -1,6 +1,6 @@
 import { XCircleIcon } from '@heroicons/react/20/solid'
 
-export default function AlertError({title, body}) {
+export default function AlertError({ title, body }) {
   return (
     <div className="rounded-md bg-red-50 p-4">
       <div className="flex">
@@ -9,9 +9,7 @@ export default function AlertError({title, body}) {
         </div>
         <div className="ml-3">
           <h3 className="text-sm font-medium text-red-800">{title}</h3>
-          <div className="mt-2 text-sm text-red-700">
-            {body}
-          </div>
+          <div className="mt-2 text-sm text-red-700">{body}</div>
         </div>
       </div>
     </div>
