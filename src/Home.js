@@ -103,7 +103,6 @@ function Home() {
     setLookupClicked(true)
     if (manualEnsName && !isLoadingEnsAddress) {
       setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
-      //setManualEnsValid(true)
     }
   }
 
@@ -113,7 +112,9 @@ function Home() {
       '0x' + multiC.addPrefix('ipfs-ns', multihash).toString('hex')
     let nameHash = namehash.hash(ensName || manualEnsName)
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
-    await broadcastNotification(notificationTitle)
+    if (notificationsEnabled) {
+      await broadcastNotification(notificationTitle)
+    }
   }
 
   const { data: contentHash } = useContractRead({

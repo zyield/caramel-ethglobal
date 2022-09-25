@@ -1,23 +1,3 @@
-import { pin } from '@snapshot-labs/pineapple'
-
-// Pineapple
-const PINEAPPLE_URL = 'https://pineapple.fyi'
-
-export async function pinText(text, url = PINEAPPLE_URL) {
-  let init = {
-    method: 'POST',
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      method: 'pin',
-      params: text,
-      id: null
-    })
-  }
-
-  let res = await fetch(url, init)
-  return (await res.json()).result
-}
-
 export const gateways = {
   pinata: 'https://gateway.pinata.cloud/ipfs',
   infura: 'https://caramel.infura-ipfs.io/ipfs',
