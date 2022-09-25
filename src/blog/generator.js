@@ -25,7 +25,7 @@ export const generate = ({ hashes, ens, channelAddress }) => `
       name="description"
       content="My forever blog"
     />
-    <title>Crml blog</title>
+    <title>${ens || 'Crml'} - Home</title>
     <style>
       .toggle-content {
       	display: none;
