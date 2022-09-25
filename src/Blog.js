@@ -61,12 +61,12 @@ const Blog = ({ callback, ensName, existingPosts, notificationsEnabled, setNotif
     return (
       <section style={{ maxWidth: 750, margin: '0 auto' }}>
         {posts.map((post, i) => (
-          <div className="relative">
+          <div className="relative" key={existingPosts[i]}>
             <RemoveButton
               onClick={() => setSelectedForRemoval(existingPosts[i])}
               className="absolute right-0 top-2"
             />
-            <Post key={existingPosts[i]} html={post} />
+            <Post html={post} />
           </div>
         ))}
       </section>

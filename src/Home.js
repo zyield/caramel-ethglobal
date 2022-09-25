@@ -124,7 +124,8 @@ function Home() {
   })
 
   useEffect(() => {
-    if (!contentHash || contentHash == '0x') return // no hash or no posts yet
+    console.log("content hash", contentHash)
+    if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') return // no hash or no posts yet
 
     let decoded = decodeContentHash(contentHash)
     fetch(`${gateways.infura}/${decoded}`)
