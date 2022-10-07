@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
-export default function SetupEPNSChannelModal({ open, setOpen }) {
+export default function MarkdownSyntaxModal({ open, setOpen }) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -25,7 +25,7 @@ export default function SetupEPNSChannelModal({ open, setOpen }) {
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-xl font-medium text-gray-900">
-                          Create an EPNS Channel
+                          Markdown Cheat Sheet
                         </Dialog.Title>
                         <div className="ml-3 flex h-7 items-center">
                           <button

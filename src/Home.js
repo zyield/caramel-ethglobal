@@ -15,8 +15,6 @@ import {
   useSigner
 } from 'wagmi'
 
-import * as EpnsAPI from "@epnsproject/sdk-restapi";
-
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletIcon } from '@heroicons/react/24/outline'
 import namehash from '@ensdomains/eth-ens-namehash'
@@ -67,16 +65,11 @@ function Home() {
   const { data: ensName } = useEnsName({ address })
   const { data: signer } = useSigner()
 
-  const [notificationSent, setNotificationSent] = useState(false)
   const [ensChecked, setEnsChecked] = useState(false)
   const [lookupClicked, setLookupClicked] = useState(false)
   const [manualEnsName, setManualEnsName] = useState('')
   const [manualEnsValid, setManualEnsValid] = useState()
   const [savedPostsHashes, setPostHashes] = useState([])
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
-  const [notificationTitle, setNotificationTitle] = useState('')
-  const [notificationBody, setNotificationBody] = useState('')
-  const [notificationCTA, setNotificationCTA] = useState('')
 
   const toHex = d =>
     d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
@@ -112,9 +105,6 @@ function Home() {
       '0x' + multiC.addPrefix('ipfs-ns', multihash).toString('hex')
     let nameHash = namehash.hash(ensName || manualEnsName)
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
-    if (notificationsEnabled) {
-      await broadcastNotification(notificationTitle)
-    }
   }
 
   const { data: contentHash } = useContractRead({
@@ -134,26 +124,6 @@ function Home() {
       .then(extractHashes)
       .then(setPostHashes)
   }, [contentHash])
-
-  const broadcastNotification = (title) => {
-    EpnsAPI.payloads.sendNotification({
-      signer,
-      type: 1, // broadcast
-      identityType: 0, // Minimal payload
-      notification: {
-        title: `New Blog post`,
-        body: `New blog post published: ${title}`
-      },
-      payload: {
-        title: `New Blog post`,
-        body: `New blog post published: ${title}`,
-        cta: '',
-        img: ''
-      },
-      channel: `eip155:${chain.id}:${address}`, // your channel address
-      env: (chain?.id === 1 ? 'prod' : 'staging')
-    });
-  }
 
   if (isLoading) return <Loading />
 
@@ -178,9 +148,6 @@ function Home() {
           callback={updateContentHash}
           ensName={ensName || manualEnsName}
           existingPosts={savedPostsHashes}
-          notificationsEnabled={notificationsEnabled}
-          setNotificationsEnabled={setNotificationsEnabled}
-          setNotificationTitle={setNotificationTitle}
         />
         {data && data?.hash && <TransactionModal hash={data?.hash} />}
       </div>
@@ -235,9 +202,6 @@ function Home() {
               callback={updateContentHash}
               ensName={ensName || manualEnsName}
               existingPosts={savedPostsHashes}
-              notificationsEnabled={notificationsEnabled}
-              setNotificationsEnabled={setNotificationsEnabled}
-              setNotificationTitle={setNotificationTitle}
             />
           </div>
         ) : manualEnsName && lookupClicked ? (
@@ -272,9 +236,6 @@ function Home() {
               callback={updateContentHash}
               ensName={ensName || manualEnsName}
               existingPosts={savedPostsHashes}
-              notificationsEnabled={notificationsEnabled}
-              setNotificationsEnabled={setNotificationsEnabled}
-              setNotificationTitle={setNotificationTitle}
             />
           </div>
         ) : null}

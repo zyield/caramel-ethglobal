@@ -29,8 +29,7 @@ const Blog = ({ callback, ensName, existingPosts, notificationsEnabled, setNotif
 
     let html = await generate({
       hashes: newPosts,
-      ens: ensName,
-      channelAddress: address
+      ens: ensName
     })
 
     let response = await uploadHTML(html)

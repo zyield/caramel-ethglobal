@@ -45,8 +45,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
     let mdResponse = await uploadMarkdown(text)
     let html = await generate({
       hashes: [mdResponse.Hash, ...existingPosts],
-      ens: ensName,
-      channelAddress: address
+      ens: ensName
     })
     let response = await uploadHTML(html)
 
