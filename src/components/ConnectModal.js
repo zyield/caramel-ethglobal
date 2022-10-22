@@ -5,6 +5,7 @@ import { ExclamationIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import coinbase_wallet_logo from '../images/coinbase_wallet.svg'
 import metamask_wallet_logo from '../images/metamask.svg'
 import walletconnect_wallet_logo from '../images/wallet_connect.svg'
+import trezor_logo from "../images/trezor.svg"
 
 export default function ConnectModal({
   open,
@@ -13,6 +14,7 @@ export default function ConnectModal({
   connectors,
   loading
 }) {
+
   const renderWalletLogo = name => {
     switch (name) {
       case 'MetaMask':
@@ -21,6 +23,8 @@ export default function ConnectModal({
         return <img src={coinbase_wallet_logo} className="mr-4" />
       case 'WalletConnect':
         return <img src={walletconnect_wallet_logo} className="w-10 mr-4" />
+      case 'Trezor':
+        return <img src={trezor_logo} className="w-16 mr-4" />
       default:
         return ''
     }
@@ -92,7 +96,7 @@ export default function ConnectModal({
                             className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-gray-900 shadow bg-gray-50 hover:bg-gray-200 hover:border-1 border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3 mb-3 w-full justify-center"
                           >
                             {renderWalletLogo(x.name)}
-                            {x.name}
+                            {x.name == "Trezor" ? "" : x.name}
                             {!x.ready && ' (unsupported)'}
                           </button>
                         )

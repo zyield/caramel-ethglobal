@@ -18,6 +18,7 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { TrezorWalletConnector } from './trezor-wagmi-connector'
 
 // Pick chains
 import { alchemyProvider } from 'wagmi/providers/alchemy'
@@ -55,6 +56,9 @@ const wagmiClient = createClient({
         name: 'Injected',
         shimDisconnect: true
       }
+    }),
+    new TrezorWalletConnector({
+      chains
     })
   ],
   provider

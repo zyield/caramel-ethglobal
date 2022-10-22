@@ -9,45 +9,65 @@ import { generate } from './blog/generator'
 import { convert } from './blog/converter'
 import { gateways, uploadHTML } from './ipfs'
 
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
 
-const Blog = ({ callback, ensName, existingPosts, notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) => {
+import { decryptWallet, markAsDeleted } from './utils/arweave'
+
+const Blog = ({ callback, ensName, existingPosts, setExistingPosts, encryptedWalletData }) => {
   const [contentURL, setContentURL] = useState(null)
   const [posts, setPosts] = useState([])
   const [ipfsHash, setIpfsHash] = useState()
   const [selectedForRemoval, setSelectedForRemoval] = useState(null)
   const { address } = useAccount()
+  const { data: signer } = useSigner()
+  const [arweaveKey, setArweaveKey] = useState()
+
+  useEffect(() => {
+    async function execute(signer, encryptedData) {
+      let key = await decryptWallet(signer, encryptedData)
+      setArweaveKey(key)
+    }
+
+    if (signer && encryptedWalletData) {
+      execute(signer, encryptedWalletData)
+    }
+  }, [encryptedWalletData, signer])
 
   let deleteModalOpen = Boolean(selectedForRemoval)
 
   const RemovePost = async () => {
-    let hash = selectedForRemoval
+    let id = selectedForRemoval
+    console.log("id", id)
+    let response = await markAsDeleted(arweaveKey, id)
+
     let newPosts = [...existingPosts]
 
-    let index = newPosts.findIndex(p => p == hash)
+    let index = newPosts.findIndex(p => p == id)
     if (index > -1) newPosts.splice(index, 1)
 
-    let html = await generate({
-      hashes: newPosts,
-      ens: ensName
-    })
+    setExistingPosts(newPosts)
 
-    let response = await uploadHTML(html)
+    //let html = await generate({
+    //  hashes: newPosts,
+    //  ens: ensName
+    //})
 
-    if (callback) {
-      await callback(response.Hash)
-    }
+    //let response = await uploadHTML(html)
 
-    setIpfsHash(response.Hash)
-    setContentURL(`https://${ensName}.limo`)
+    //if (callback) {
+    //  await callback(response.Hash)
+    //}
+
+    //setIpfsHash(response.Hash)
+    //setContentURL(`https://${ensName}.limo`)
   }
 
   useEffect(() => {
     if (!existingPosts.length) return
 
     Promise.all(
-      existingPosts.map(hash =>
-        fetch(`${gateways.infura}/${hash}`).then(res => res.text())
+      existingPosts.map(id =>
+        fetch(`https://bnjr5drbo27dam2cmqdbijmmof7mnxlydfjoywtwbdofa3uzol7q.arweave.net/${id}`).then(res => res.text())
       )
     )
       .then(posts => posts.map(markdown => convert(markdown)))
@@ -106,9 +126,6 @@ const Blog = ({ callback, ensName, existingPosts, notificationsEnabled, setNotif
         callback={callback}
         ensName={ensName}
         existingPosts={existingPosts}
-        notificationsEnabled={notificationsEnabled}
-        setNotificationsEnabled={setNotificationsEnabled}
-        setNotificationTitle={setNotificationTitle}
       />
       {renderPosts()}
       <DeletePostModal

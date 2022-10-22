@@ -23,7 +23,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TextArea({ onSubmit, onCancel, contentURL, notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) {
+export default function TextArea({ onSubmit, onCancel, contentURL }) {
   const [text, setText] = useState('')
   const [title, setTitle] = useState('')
   const [open, setOpen] = useState(false)
@@ -47,9 +47,7 @@ export default function TextArea({ onSubmit, onCancel, contentURL, notifications
 
   const handleTitleChange = (title) => {
     setTitle(title)
-    setNotificationTitle(title)
   }
-
 
   return (
     <form className="w-full" onSubmit={handleSubmit}>

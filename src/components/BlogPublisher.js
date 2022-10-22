@@ -4,8 +4,8 @@ import ContentPopup from './ContentPopup'
 
 import {
   gateways,
-  addFile,
   uploadHTML,
+  uploadFile,
   uploadMarkdown,
   getContentURL
 } from '../ipfs'
@@ -13,7 +13,9 @@ import {
 import storage from '../storage'
 import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
+
+import { generateArweaveWallet, getAddress, upload } from '../utils/arweave'
 
 const ActionHeading = ({ ensName, onNewPost }) => (
   <div className="md:flex md:items-center md:justify-between">
@@ -34,27 +36,44 @@ const ActionHeading = ({ ensName, onNewPost }) => (
   </div>
 )
 
-function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) {
+function BlogPublisher({ callback, ensName, existingPosts = [] }) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
   const [isEditing, setIsEditing] = useState(false)
   const { address } = useAccount()
+  const { data: signer } = useSigner()
 
   const onSubmit = async text => {
-    // magic happens here
-    let mdResponse = await uploadMarkdown(text)
-    let html = await generate({
-      hashes: [mdResponse.Hash, ...existingPosts],
-      ens: ensName
-    })
-    let response = await uploadHTML(html)
+    // arweave wallet address
+    let { wallet, encryptedWalletData } = await generateArweaveWallet(signer, address)
+    //let arweaveWalletAddress = "JsB8Ee-oL9KxJtrZR2i5ew_ZpWraxmOWQRexsu3WRE8" //await getAddress(wallet)
 
-    if (callback) {
-      await callback(response.Hash)
-    }
+    //// upload encrypted arweave wallet to ipfs => get cid
+    //let { Hash: encryptedWalletCID }  = await uploadFile({content: encryptedWalletData, name: "arweaveWallet", type: "text/plain"})
 
-    setHash(response.Hash)
-    setContentURL(`https://${ensName}.limo`)
+    //console.log("encrypted wallet cid", encryptedWalletCID)
+
+    //// store cid of encrypted wallet in the main html
+
+    //// arweave upload
+    //await upload(wallet, text)
+
+    //let html = await generate({
+    //  encryptedWalletCID,
+    //  arweaveWalletAddress,
+    //  ens: ensName
+    //})
+
+    //let response = await uploadHTML(html)
+
+    //console.log("res", response)
+
+    //if (callback) {
+    //  await callback(response.Hash)
+    //}
+
+    //setHash(response.Hash)
+    //setContentURL(`https://${ensName}.limo`)
   }
 
   const renderSuccess = () => (
@@ -94,9 +113,6 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
           onCancel={() => setIsEditing(false)}
           onSubmit={onSubmit}
           contentURL={contentURL}
-          notificationsEnabled={notificationsEnabled}
-          setNotificationsEnabled={setNotificationsEnabled}
-          setNotificationTitle={setNotificationTitle}
         />
       ) : (
         <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
