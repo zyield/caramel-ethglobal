@@ -45,7 +45,6 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
 
   useEffect(() => {
     async function do_work(key) {
-      console.log("DO WORK")
       let keyA = JSON.parse(sessionStorage.getItem("arweaveKey"))
       let enc = await encryptWallet(address, keyA)
       setEncryptedWalletData(enc)

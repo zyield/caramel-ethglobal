@@ -1,17 +1,16 @@
-import { encrypt, decrypt } from './trezor'
+//import { encrypt, decrypt } from './trezor'
 import Arweave from 'arweave';
 
-var ethUtil = require('ethereumjs-util')
-var sigUtil = require('@metamask/eth-sig-util')
+import { encrypt } from './sigUtil'
+
+//var ethUtil = require('ethereumjs-util')
+//var sigUtil = require('@metamask/eth-sig-util')
 
 const arweave = Arweave.init({
   host:'arweave.net',
   port: 443,
   protocol: 'https'
 });
-
-var ethUtil = require('ethereumjs-util');
-var sigUtil = require("@metamask/eth-sig-util")
 
 const chunkSubstr = (str, size) => {
   const numChunks = Math.ceil(str.length / size)
@@ -43,17 +42,17 @@ export async function generateArweaveWallet(connect, address)  {
       })
 
     let keyBytes = Buffer.from(key)
-    let encryptedWalletString = ethUtil.bufferToHex(
-      Buffer.from(
-        JSON.stringify(
-          sigUtil.encrypt({
-            publicKey: keyBytes,
-            data: walletDataString,
-            version:'x25519-xsalsa20-poly1305'
-          })
-        )
-      )
-    )
+    let encryptedBuffer =  Buffer.from(
+       JSON.stringify(
+         encrypt({
+           publicKey: keyBytes,
+           data: walletDataString,
+           version:'x25519-xsalsa20-poly1305'
+         })
+       )
+     )
+
+    let encryptedWalletString = encryptedBuffer.toString('hex')
 
     return { wallet: arweaveKey, encryptedWalletData: encryptedWalletString }
 
@@ -97,17 +96,18 @@ export async function encryptWallet(address, wallet) {
     })
 
   let keyBytes = Buffer.from(key)
-  let encryptedWalletString = ethUtil.bufferToHex(
-    Buffer.from(
-      JSON.stringify(
-        sigUtil.encrypt({
-          publicKey: keyBytes,
-          data: walletDataString,
-          version:'x25519-xsalsa20-poly1305'
-        })
-      )
-    )
-  )
+
+  let encryptedBuffer =  Buffer.from(
+     JSON.stringify(
+       encrypt({
+         publicKey: keyBytes,
+         data: walletDataString,
+         version:'x25519-xsalsa20-poly1305'
+       })
+     )
+   )
+
+  let encryptedWalletString = encryptedBuffer.toString('hex')
 
   return encryptedWalletString
 }
@@ -124,8 +124,9 @@ export async function decryptWallet(connect, address, data) {
     return JSON.parse(key).wallet_data
 
   } catch (error) {
-    let decrypted = await decrypt(connect, data)
-    return decrypted
+    alert("We are currently not supporting hardware wallets connected via Metamask")
+    //let decrypted = await decrypt(connect, data)
+    //return decrypted
   }
 }
 

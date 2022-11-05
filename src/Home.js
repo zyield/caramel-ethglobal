@@ -51,6 +51,8 @@ const hexStringToBuffer = hex => {
   return multiH.fromHexString(res)
 }
 
+const toHexString = arr => Array.from(arr, i => i.toString(16).padStart(2, "0")).join("")
+
 const decodeContentHash = contentHash => {
   let buffer = hexStringToBuffer(contentHash)
   let codec = multiC.getCodec(buffer)
@@ -110,8 +112,9 @@ function Home() {
 
   const updateContentHash = async value => {
     const multihash = multiH.fromB58String(value)
+    let ipfsns = multiC.addPrefix('ipfs-ns', multihash)
     let contentHash =
-      '0x' + multiC.addPrefix('ipfs-ns', multihash).toString('hex')
+      '0x' + toHexString(ipfsns)
     let nameHash = namehash.hash(ensName || manualEnsName)
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
   }

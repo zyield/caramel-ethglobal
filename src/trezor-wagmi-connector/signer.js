@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-const ethUtil = require('ethereumjs-util');
+//const ethUtil = require('ethereumjs-util');
 
 export class TrezorSigner extends ethers.Signer {
   constructor(provider, transport, type, path, key) {
@@ -35,9 +35,10 @@ export class TrezorSigner extends ethers.Signer {
   }
 
   async getAddress() {
-    const address = ethUtil
-      .publicToAddress(this.hdk.publicKey, true)
-      .toString('hex');
-    return ethUtil.toChecksumAddress(`0x${address}`);
+    return "0x"
+    //const address = ethUtil
+    //  .publicToAddress(this.hdk.publicKey, true)
+    //  .toString('hex');
+    //return ethUtil.toChecksumAddress(`0x${address}`);
   }
 }
