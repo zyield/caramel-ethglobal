@@ -10,10 +10,8 @@ const arweave = Arweave.init({
   protocol: 'https'
 });
 
-const bypassKey = require("./arweave_key.json")
-
-//var ethUtil = require('ethereumjs-util');
-//var sigUtil = require("@metamask/eth-sig-util")
+var ethUtil = require('ethereumjs-util');
+var sigUtil = require("@metamask/eth-sig-util")
 
 const chunkSubstr = (str, size) => {
   const numChunks = Math.ceil(str.length / size)
@@ -26,10 +24,13 @@ const chunkSubstr = (str, size) => {
   return chunks
 }
 
+export async function getBalance(address) {
+  let winston = await arweave.wallets.getBalance(address)
+  let ar = arweave.ar.winstonToAr(winston);
+  return ar
+}
+
 export async function generateArweaveWallet(connect, address)  {
-
-  console.log("connect", connect)
-
   let arweaveKey = await arweave.wallets.generate()
   let walletData = { wallet_data: arweaveKey }
   let walletDataString = JSON.stringify(walletData)
@@ -41,63 +42,91 @@ export async function generateArweaveWallet(connect, address)  {
         params: [address], // you must have access to the specified account
       })
 
-    //let keyBytes = Buffer.from(key)
+    let keyBytes = Buffer.from(key)
+    let encryptedWalletString = ethUtil.bufferToHex(
+      Buffer.from(
+        JSON.stringify(
+          sigUtil.encrypt({
+            publicKey: keyBytes,
+            data: walletDataString,
+            version:'x25519-xsalsa20-poly1305'
+          })
+        )
+      )
+    )
 
-    //ethUtil.bufferToHex(
-    //  Buffer.from(
-    //    JSON.stringify(
-    //      sigUtil.encrypt({
-    //        publicKey: keyBytes,
-    //        data: walletDataString,
-    //        version:'x25519-xsalsa20-poly1305'
-    //      })
-    //    )
-    //  )
-    //)
+    return { wallet: arweaveKey, encryptedWalletData: encryptedWalletString }
+
   } catch (e) {
 
-    let walletParts = chunkSubstr(walletDataString, 1024)
+    alert("We are currently not supporting hardware wallets connected via Metamask")
 
-    let payload = walletParts.map((part, index) => {
-      let bufferPart = Buffer.from(part)
-      let hexVal = ethUtil.bufferToHex(bufferPart).slice(2)
+    //let walletParts = chunkSubstr(walletDataString, 1024)
 
-      localStorage.setItem(`part ${index}`, hexVal)
+    //let payload = walletParts.map((part, index) => {
+    //  let bufferPart = Buffer.from(part)
+    //  let hexVal = ethUtil.bufferToHex(bufferPart).slice(2)
 
-      return {
-        path: "m/49'/0'/0'",
-        key: `Part ${index+1}/4`,
-        value: hexVal,
-        encrypt: true,
-        askOnEncrypt: true,
-        askOnDecrypt: true
-      }
+    //  localStorage.setItem(`part ${index}`, hexVal)
+
+    //  return {
+    //    path: "m/49'/0'/0'",
+    //    key: `Part ${index+1}/4`,
+    //    value: hexVal,
+    //    encrypt: true,
+    //    askOnEncrypt: true,
+    //    askOnDecrypt: true
+    //  }
+    //})
+
+    //let encryptedWalletString = await encrypt(connect, payload)
+
+    //return { wallet: arweaveKey, encryptedWalletData: encryptedWalletString }
+  }
+
+}
+
+export async function encryptWallet(address, wallet) {
+  let walletData = { wallet_data: wallet }
+  let walletDataString = JSON.stringify(walletData)
+
+  let key = await window.ethereum
+    .request({
+      method: 'eth_getEncryptionPublicKey',
+      params: [address], // you must have access to the specified account
     })
 
-    let encryptedWalletString = await encrypt(connect, payload)
-    return { wallet: arweaveKey, encryptedWalletData: encryptedWalletString }
+  let keyBytes = Buffer.from(key)
+  let encryptedWalletString = ethUtil.bufferToHex(
+    Buffer.from(
+      JSON.stringify(
+        sigUtil.encrypt({
+          publicKey: keyBytes,
+          data: walletDataString,
+          version:'x25519-xsalsa20-poly1305'
+        })
+      )
+    )
+  )
+
+  return encryptedWalletString
+}
+
+export async function decryptWallet(connect, address, data) {
+
+  try {
+    let key = await window.ethereum
+      .request({
+        method: 'eth_decrypt',
+        params: [data, address],
+      })
+
+    return JSON.parse(key).wallet_data
+
+  } catch (error) {
+    let decrypted = await decrypt(connect, data)
+    return decrypted
   }
-}
-
-async function getPublicKey(address) {
-  let encryptionPublicKey;
-
-   // .then((result) => {
-   //   encryptionPublicKey = result;
-   // })
-   // .catch((error) => {
-   //   if (error.code === 4001) {
-   //     // EIP-1193 userRejectedRequest error
-   //     console.log("We can't encrypt anything without the key.");
-   //   } else {
-   //     console.error(error);
-   //   }
-   // });
-}
-
-export async function decryptWallet(connect, data) {
-  let decrypted = await decrypt(connect, data)
-  console.log("decrypted", decrypted)
 }
 
 export async function getAddress(key) {
@@ -109,33 +138,33 @@ export async function upload(key, content) {
 
   let transaction = await arweave.createTransaction({
     data: content
-  }, bypassKey)
+  }, key)
 
   transaction.addTag('Content-Type', 'text/plain')
   transaction.addTag('App-Name', 'Caramel')
 
-  await arweave.transactions.sign(transaction, bypassKey)
+  await arweave.transactions.sign(transaction, key)
 
   let uploader = await arweave.transactions.getUploader(transaction)
 
   while (!uploader.isComplete) {
     await uploader.uploadChunk()
-    console.log(`${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`)
+    //console.log(`${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`)
   }
 }
 
 export async function markAsDeleted(key, id) {
   let transaction = await arweave.createTransaction({
     data: id
-  }, bypassKey)
+  }, key)
 
   transaction.addTag('Tombstone', "true")
   transaction.addTag('Id', id)
   transaction.addTag('App-Name', 'Caramel')
 
-  await arweave.transactions.sign(transaction, bypassKey)
-
+  await arweave.transactions.sign(transaction, key)
   const response = await arweave.transactions.post(transaction);
+  return response
 }
 
 export const fetchTombstones = (address) => {
@@ -186,7 +215,6 @@ export const fetchTombstones = (address) => {
 }
 
 export const fetchTransactions = (address, tombstones) => {
-  console.log("address", address)
     const query = `
       query getTransactions (
           $owners: [String!]
@@ -229,7 +257,6 @@ export const fetchTransactions = (address, tombstones) => {
       .then(response => response.json())
       .then(({ data: { transactions: { edges } } }) => {
         let ids = edges.map((transaction) => {
-          console.log("tx", transaction.node.id)
           if (!tombstones.includes(transaction.node.id)) {
             return transaction.node.id
           }

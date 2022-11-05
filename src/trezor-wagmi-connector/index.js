@@ -4,6 +4,8 @@ import { getAddress, hexValue } from 'ethers/lib/utils';
 import TrezorConnect from '@trezor/connect-web';
 import { normalizeChainId, ProviderRpcError } from '@wagmi/core';
 
+import { TrezorSigner } from './signer'
+
 import {
   Connector,
   Chain
@@ -13,7 +15,7 @@ const ethUtil = require('ethereumjs-util');
 
 const TREZOR_CONNECT_MANIFEST = {
   email: 'contact@zyield.fi',
-  appUrl: 'https://6609-38-88-108-58.ngrok.io',
+  appUrl: 'https://6dfd-38-88-108-58.ngrok.io',
 };
 
 export class TrezorWalletConnector extends Connector {
@@ -58,7 +60,24 @@ export class TrezorWalletConnector extends Connector {
 
         window.hdk = this.hdk
 
-        return { account, chain: { id: 1, name: "Ethereum", network: "homestead", unsuported: false, ens: { address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}}, provider };
+        let goerliChainConfig = {
+          id: 5,
+          unsuported: false,
+          name: "Goerli",
+          testnet: true,
+          network: "goerli",
+          ens: { address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
+        }
+
+        let mainnetChainConfig = {
+          id: 1,
+          name: "Ethereum",
+          network: "homestead",
+          unsuported: false,
+          ens: { address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
+        }
+
+        return { account: account, chain: goerliChainConfig , provider: provider };
       } else {
         console.log("error getting public key")
       }
@@ -75,8 +94,13 @@ export class TrezorWalletConnector extends Connector {
   }
 
   async getSigner() {
-    const provider = await this.getProvider();
-    return provider
+    const infuraProvider = new providers.getDefaultProvider()
+    const transport = await this.getProvider();
+
+    const path =  "m/44'/60'/0'/0/0"
+    const signer = new TrezorSigner(infuraProvider, transport, "default", path, this.hdk)
+
+    return signer
   }
 
   async disconnect() {

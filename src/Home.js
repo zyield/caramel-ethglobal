@@ -23,7 +23,7 @@ import multiC from 'multicodec'
 import CID from 'cids'
 
 import { addresses } from './utils'
-import { generateArweaveWallet, fetchTransactions, fetchTombstones } from './utils/arweave'
+import { fetchTransactions, fetchTombstones } from './utils/arweave'
 
 import Blog from './Blog'
 import Hero from './components/Hero'
@@ -37,6 +37,8 @@ import PublicResolverABI from './abis/PublicResolver.json'
 import { gateways } from './ipfs'
 import { extractHashes, extractEncryptedWalletCID, extractArweaveWalletAddress } from './blog/parser'
 import mainLogoWhite from './images/logo_white.svg'
+
+import { useArweaveWalletStore } from './providers/ArweaveWalletContext'
 
 // stolen from
 // https://github.com/ensdomains/content-hash/blob/master/src/profiles.js
@@ -73,6 +75,9 @@ function Home() {
   const [arweaveWalletCID, setArweaveWalletCID] = useState()
   const [arweaveWalletAddress, setArweaveWalletAddress] = useState()
   const [encryptedWalletData, setEncryptedWalletData] = useState()
+  const [rootCID, setRootCID] = useState()
+  const arweaveStore = useArweaveWalletStore()
+  const [arweaveWalletNotSet, setArweaveWalletNotSet] = useState()
 
   const toHex = d =>
     d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
@@ -98,7 +103,8 @@ function Home() {
   const handleEnsLookup = () => {
     setLookupClicked(true)
     if (manualEnsName && !isLoadingEnsAddress) {
-      setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
+      //setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
+      setManualEnsValid(true)
     }
   }
 
@@ -118,9 +124,14 @@ function Home() {
   })
 
   useEffect(() => {
-    if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') return // no hash or no posts yet
+    if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') {
+      setArweaveWalletNotSet(true)
+      return
+    }
 
     let decoded = decodeContentHash(contentHash)
+    setRootCID(decoded)
+
     fetch(`${gateways.infura}/${decoded}`)
       .then(res => res.text())
       .then((html) => {
@@ -137,6 +148,7 @@ function Home() {
         })
         .then(setArweaveIds)
       })
+
   }, [contentHash])
 
   useEffect(() => {
@@ -174,8 +186,10 @@ function Home() {
           callback={updateContentHash}
           ensName={ensName || manualEnsName}
           existingPosts={arweaveIds}
+          setEncryptedWalletData={setEncryptedWalletData}
           setExistingPosts={setArweaveIds}
           encryptedWalletData={encryptedWalletData}
+          rootCID={rootCID}
         />
         {data && data?.hash && <TransactionModal hash={data?.hash} />}
       </div>
@@ -232,7 +246,9 @@ function Home() {
               callback={updateContentHash}
               ensName={ensName || manualEnsName}
               existingPosts={arweaveIds}
+              setEncryptedWalletData={setEncryptedWalletData}
               setExistingPosts={setArweaveIds}
+              rootCID={rootCID}
               encryptedWalletData={encryptedWalletData}
             />
           </div>
@@ -269,6 +285,8 @@ function Home() {
               ensName={ensName || manualEnsName}
               existingPosts={arweaveIds}
               setExistingPosts={setArweaveIds}
+              setEncryptedWalletData={setEncryptedWalletData}
+              rootCID={rootCID}
               encryptedWalletData={encryptedWalletData}
             />
           </div>

@@ -15,7 +15,7 @@ import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
 import { useAccount, useSigner } from 'wagmi'
 
-import { generateArweaveWallet, getAddress, upload } from '../utils/arweave'
+import { generateArweaveWallet, encryptWallet, getAddress, upload } from '../utils/arweave'
 
 const ActionHeading = ({ ensName, onNewPost }) => (
   <div className="md:flex md:items-center md:justify-between">
@@ -36,44 +36,56 @@ const ActionHeading = ({ ensName, onNewPost }) => (
   </div>
 )
 
-function BlogPublisher({ callback, ensName, existingPosts = [] }) {
+function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, rootCID, encryptedWalletData, setEncryptedWalletData, existingPosts = [] }) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
   const [isEditing, setIsEditing] = useState(false)
   const { address } = useAccount()
   const { data: signer } = useSigner()
 
+  useEffect(() => {
+    async function do_work(key) {
+      console.log("DO WORK")
+      let keyA = JSON.parse(sessionStorage.getItem("arweaveKey"))
+      let enc = await encryptWallet(address, keyA)
+      setEncryptedWalletData(enc)
+    }
+
+    if ((encryptedWalletData == "undefined" || !encryptedWalletData) && !arweaveKey) {
+      do_work(arweaveKey)
+    }
+
+  }, [])
+
   const onSubmit = async text => {
-    // arweave wallet address
-    let { wallet, encryptedWalletData } = await generateArweaveWallet(signer, address)
-    //let arweaveWalletAddress = "JsB8Ee-oL9KxJtrZR2i5ew_ZpWraxmOWQRexsu3WRE8" //await getAddress(wallet)
+    if (rootCID)  {
+      // arweave upload
+      await upload(arweaveKey, text)
+      setHash(rootCID)
+    } else {
+      // upload encrypted arweave wallet to ipfs => get cid
+      let { Hash: encryptedWalletCID }  = await uploadFile({content: encryptedWalletData, name: "arweaveWallet", type: "text/plain"})
 
-    //// upload encrypted arweave wallet to ipfs => get cid
-    //let { Hash: encryptedWalletCID }  = await uploadFile({content: encryptedWalletData, name: "arweaveWallet", type: "text/plain"})
+      let html = await generate({
+        encryptedWalletCID,
+        arweaveWalletAddress,
+        ens: ensName
+      })
 
-    //console.log("encrypted wallet cid", encryptedWalletCID)
+      let response = await uploadHTML(html)
 
-    //// store cid of encrypted wallet in the main html
+      setHash(response.Hash)
 
-    //// arweave upload
-    //await upload(wallet, text)
+      if (callback) {
+        await callback(response.Hash)
+      }
 
-    //let html = await generate({
-    //  encryptedWalletCID,
-    //  arweaveWalletAddress,
-    //  ens: ensName
-    //})
+      // arweave upload
+      await upload(arweaveKey, text)
 
-    //let response = await uploadHTML(html)
+    }
 
-    //console.log("res", response)
-
-    //if (callback) {
-    //  await callback(response.Hash)
-    //}
-
-    //setHash(response.Hash)
-    //setContentURL(`https://${ensName}.limo`)
+    setContentURL(`https://${ensName}.limo`)
   }
 
   const renderSuccess = () => (

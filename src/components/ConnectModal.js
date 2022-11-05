@@ -7,6 +7,8 @@ import metamask_wallet_logo from '../images/metamask.svg'
 import walletconnect_wallet_logo from '../images/wallet_connect.svg'
 import trezor_logo from "../images/trezor.svg"
 
+import { useArweaveWalletStore } from '../providers/ArweaveWalletContext'
+
 export default function ConnectModal({
   open,
   setOpen,
@@ -14,6 +16,8 @@ export default function ConnectModal({
   connectors,
   loading
 }) {
+
+  const arweaveStore = useArweaveWalletStore()
 
   const renderWalletLogo = name => {
     switch (name) {
@@ -24,7 +28,7 @@ export default function ConnectModal({
       case 'WalletConnect':
         return <img src={walletconnect_wallet_logo} className="w-10 mr-4" />
       case 'Trezor':
-        return <img src={trezor_logo} className="w-16 mr-4" />
+        return <img src={trezor_logo} className="h-6 mr-4" />
       default:
         return ''
     }
@@ -76,7 +80,7 @@ export default function ConnectModal({
                   <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
               </div>
-              <div className="sm:flex sm:items-start">
+              <div className="sm:flex sm:items-start justify-center">
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <Dialog.Title
                     as="h3"
@@ -84,7 +88,7 @@ export default function ConnectModal({
                   >
                     Select your wallet
                   </Dialog.Title>
-                  <div className="mt-4">
+                  <div className="mt-10">
                     {connectors.map(x => {
                       if (x.name !== 'Injected') {
                         return (
