@@ -34,7 +34,6 @@
     "react-scripts": "5.0.1",
     "showdown": "^2.1.0",
     "svg-loaders-react": "^2.2.1",
-    "trezor-wagmi-connector": "file:../trezor-wagmi-connector",
     "wagmi": "^0.6.4",
     "web-vitals": "^2.1.0"
   },
