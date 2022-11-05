@@ -132,6 +132,8 @@ function Home() {
       return
     }
 
+    console.log("fetching root CID", contentHash)
+
     let decoded = decodeContentHash(contentHash)
     setRootCID(decoded)
 
