@@ -105,8 +105,8 @@ function Home() {
   const handleEnsLookup = () => {
     setLookupClicked(true)
     if (manualEnsName && !isLoadingEnsAddress) {
-      //setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
-      setManualEnsValid(true)
+      setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
+      //setManualEnsValid(true)
     }
   }
 
@@ -119,12 +119,15 @@ function Home() {
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
   }
 
-  const { data: contentHash } = useContractRead({
+  const { data: contentHash, error: errorContentHash } = useContractRead({
     addressOrName: addresses[chain?.network]?.ens_public_resolver,
     contractInterface: PublicResolverABI,
     functionName: 'contenthash',
     args: [namehash.hash(ensName || manualEnsName)]
   })
+
+  console.log("contentHash", contentHash)
+  console.log("errorContentHash", errorContentHash)
 
   useEffect(() => {
     if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') {
