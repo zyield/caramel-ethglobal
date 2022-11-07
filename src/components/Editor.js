@@ -14,11 +14,13 @@ import {
   PlusCircleIcon,
   PlayCircleIcon,
   CodeBracketSquareIcon,
+  CodeBracketIcon,
   PhotoIcon,
   ListBulletIcon,
   Bars3CenterLeftIcon,
   Bars3BottomRightIcon,
-  Bars3Icon
+  Bars3Icon,
+  ChatBubbleBottomCenterTextIcon
 } from '@heroicons/react/24/outline'
 
 
@@ -47,16 +49,13 @@ const renderIcon = icon => {
     // case "format_list_bulleted":
     //   return <ListBulletIcon className="w-6" />
     case "format_align_left":
-     // return  <Bars3CenterLeftIcon className="w-6" />
-      return <span className="w-6">Align Left</span>
+      return  <Bars3CenterLeftIcon title="Align left" className="w-6" />
     case "format_align_center":
-      // return <Bars3Icon className="w-6"/>
-      return <span className="w-6">Align Center</span>
+      return <Bars3Icon title="Align center" className="w-6"/>
     case "format_align_right":
-      // return <Bars3BottomRightIcon className="w-6"/>
-      return <span className="w-6">Align Right</span>
-    // case "format_align_justify":
-      // return <Bars3Icon className="w-6"/>
+       return <Bars3BottomRightIcon title="Align right" className="w-6"/>
+     case "format_align_justify":
+       return <Bars3Icon className="w-6"/>
     case "format_bold":
       return <span className="w-6">Bold</span>
     case "format_italic":
@@ -64,15 +63,15 @@ const renderIcon = icon => {
     case "format_underlined":
       return <span className="w-6">Underline</span>
     case "block_code":
-      return <span className="w-6">Code block</span>
+      return <CodeBracketSquareIcon title="Block of code" className="w-6"/>
     case "code":
-      return <span className="w-6">Code</span>
+      return <CodeBracketIcon title="Code" className="w-6"/>
     case "looks_one":
-      return <span className="w-6">Heading1</span>
+      return <span className="w-6">H1</span>
     case "looks_two":
-      return <span className="w-6">Heading2</span>
+      return <span className="w-6">H2</span>
     case "format_quote":
-      return <span className="w-6">Quote</span>
+      return <ChatBubbleBottomCenterTextIcon title="Quote" className="w-6"/>
     case "format_list_numbered":
     default:
       return null
@@ -107,7 +106,7 @@ const MainEditor = () => {
 
   return (
     <Slate onChange={onChange} editor={editor} value={initialValue}>
-      <Toolbar className="text-zinc-100 mb-10">
+      <Toolbar className="flex text-zinc-100 mb-10">
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_underlined" />
