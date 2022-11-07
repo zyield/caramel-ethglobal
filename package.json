@@ -24,6 +24,9 @@
     "react-router-dom": "6",
     "react-scripts": "5.0.1",
     "showdown": "^2.1.0",
+    "slate": "^0.84.0",
+    "slate-history": "^0.66.0",
+    "slate-react": "^0.83.2",
     "svg-loaders-react": "^2.2.1",
     "wagmi": "^0.6.4",
     "web-vitals": "^2.1.0"

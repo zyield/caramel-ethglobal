@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import TextArea from './TextArea'
 import ContentPopup from './ContentPopup'
+import NewPost from './NewPost'
 
 import {
   gateways,
@@ -40,7 +41,11 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
   const [isEditing, setIsEditing] = useState(false)
   const { address } = useAccount()
 
-  const onSubmit = async text => {
+  const onSubmit = async e => {
+    let text = ''
+    e.preventDefault()
+
+    return console.log('submitting')
     // magic happens here
     let mdResponse = await uploadMarkdown(text)
     let html = await generate({
@@ -89,7 +94,7 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
 
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
-      {isEditing ? (
+      {/* isEditing ? (
         <TextArea
           onCancel={() => setIsEditing(false)}
           onSubmit={onSubmit}
@@ -100,7 +105,11 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
         />
       ) : (
         <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
-      )}
+      )*/}
+      { isEditing
+        ? <NewPost onSubmit={onSubmit} onCancel={() => setIsEditing(false)} />
+        : <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
+      }
     </div>
   )
 }
