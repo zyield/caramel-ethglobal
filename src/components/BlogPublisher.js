@@ -41,11 +41,9 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
   const [isEditing, setIsEditing] = useState(false)
   const { address } = useAccount()
 
-  const onSubmit = async e => {
-    let text = ''
-    e.preventDefault()
-
-    return console.log('submitting')
+  const onSubmit = async content => {
+    let text = content
+    return console.log('submitting', content)
     // magic happens here
     let mdResponse = await uploadMarkdown(text)
     let html = await generate({

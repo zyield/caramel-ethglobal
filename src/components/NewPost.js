@@ -1,7 +1,13 @@
 import Editor from './Editor'
 
-const NewPost = ({ onSubmit, onCancel, loading }) => (
-  <form onSubmit={onSubmit} className="w-full">
+const NewPost = ({ onSubmit, onCancel, loading }) => {
+  const submit = e => {
+    e.preventDefault()
+    let content = JSON.parse(localStorage.getItem('content'))
+    onSubmit(content)
+  }
+
+  return <form onSubmit={onSubmit} className="w-full">
     <div className="flex justify-end mb-8 border-b-grey-400">
       <button
         type="button"
@@ -21,6 +27,6 @@ const NewPost = ({ onSubmit, onCancel, loading }) => (
 
     <Editor />
   </form>
-)
+}
 
 export default NewPost
