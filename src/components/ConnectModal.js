@@ -5,6 +5,9 @@ import { ExclamationIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import coinbase_wallet_logo from '../images/coinbase_wallet.svg'
 import metamask_wallet_logo from '../images/metamask.svg'
 import walletconnect_wallet_logo from '../images/wallet_connect.svg'
+import trezor_logo from "../images/trezor.svg"
+
+import { useArweaveWalletStore } from '../providers/ArweaveWalletContext'
 
 export default function ConnectModal({
   open,
@@ -13,6 +16,9 @@ export default function ConnectModal({
   connectors,
   loading
 }) {
+
+  const arweaveStore = useArweaveWalletStore()
+
   const renderWalletLogo = name => {
     switch (name) {
       case 'MetaMask':
@@ -21,6 +27,8 @@ export default function ConnectModal({
         return <img src={coinbase_wallet_logo} className="mr-4" />
       case 'WalletConnect':
         return <img src={walletconnect_wallet_logo} className="w-10 mr-4" />
+      case 'Trezor':
+        return <img src={trezor_logo} className="h-6 mr-4" />
       default:
         return ''
     }
@@ -72,7 +80,7 @@ export default function ConnectModal({
                   <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
               </div>
-              <div className="sm:flex sm:items-start">
+              <div className="sm:flex sm:items-start justify-center">
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <Dialog.Title
                     as="h3"
@@ -80,7 +88,7 @@ export default function ConnectModal({
                   >
                     Select your wallet
                   </Dialog.Title>
-                  <div className="mt-4">
+                  <div className="mt-10">
                     {connectors.map(x => {
                       if (x.name !== 'Injected') {
                         return (
@@ -92,7 +100,7 @@ export default function ConnectModal({
                             className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-gray-900 shadow bg-gray-50 hover:bg-gray-200 hover:border-1 border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3 mb-3 w-full justify-center"
                           >
                             {renderWalletLogo(x.name)}
-                            {x.name}
+                            {x.name == "Trezor" ? "" : x.name}
                             {!x.ready && ' (unsupported)'}
                           </button>
                         )

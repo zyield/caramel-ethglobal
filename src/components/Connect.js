@@ -6,10 +6,20 @@ import { useConnect } from 'wagmi'
 import ConnectModal from './ConnectModal'
 import ConnectNotification from './ConnectNotification'
 
+import { useArweaveWalletStore } from '../providers/ArweaveWalletContext'
+
 function Connect({ callback, button_text, custom_style }) {
   const [open, setOpen] = useState(false)
+  const arweaveStore = useArweaveWalletStore()
+
   const { connect, connectors, error, isConnecting, pendingConnector } =
-    useConnect()
+    useConnect({
+      onSuccess(data) {
+        let { connector } = data
+        arweaveStore.setConnector(connector)
+        arweaveStore.setProvider(connector.providerInstance)
+      }
+    })
 
   button_text = button_text || 'Connect Wallet'
 

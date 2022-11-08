@@ -1,7 +1,7 @@
 // gets array of posts
 // generates html
 
-export const generate = ({ hashes, ens }) => `
+export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -18,6 +18,7 @@ export const generate = ({ hashes, ens }) => `
     />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js"></script>
 
     <meta charset="utf-8" />
     <meta
@@ -75,6 +76,9 @@ export const generate = ({ hashes, ens }) => `
         width: 100%;
         border-bottom: 1px solid rgb(244, 244, 245);
       }
+      #encryptedWalletCID {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -87,48 +91,109 @@ export const generate = ({ hashes, ens }) => `
         </section>
       </main>
     </div>
+    <span id="encryptedWalletCID">${encryptedWalletCID}</span>
   </body>
 
   <script>
+    let opts = {
+      'omitExtraWLInCodeBlocks': true,
+      'noHeaderId': false,
+      'parseImgDimensions': true,
+      'simplifiedAutoLink': true,
+      'literalMidWordUnderscores': true,
+      'strikethrough': true,
+      'tables': true,
+      'tablesHeaderId': false,
+      'ghCodeBlocks': true,
+      'tasklists': true,
+      'smoothLivePreview': true,
+      'prefixHeaderId': false,
+      'disableForced4SpacesIndentedSublists': false,
+      'ghCompatibleHeaderId': true,
+      'smartIndentationFix': false
+    }
 
-let opts = {
-  'omitExtraWLInCodeBlocks': true,
-  'noHeaderId': false,
-  'parseImgDimensions': true,
-  'simplifiedAutoLink': true,
-  'literalMidWordUnderscores': true,
-  'strikethrough': true,
-  'tables': true,
-  'tablesHeaderId': false,
-  'ghCodeBlocks': true,
-  'tasklists': true,
-  'smoothLivePreview': true,
-  'prefixHeaderId': false,
-  'disableForced4SpacesIndentedSublists': false,
-  'ghCompatibleHeaderId': true,
-  'smartIndentationFix': false
-}
+    const converter = new showdown.Converter(opts)
 
-const converter = new showdown.Converter(opts)
+    const query = \`
+      query getTransactions (
+          $owners: [String!]
+          $tags: [TagFilter!]
+      ) {
+          transactions (
+              owners: $owners
+              tags: $tags
+          ) {
+              edges {
+                  node {
+                      id
+                      tags {
+                          name
+                          value
+                      }
+                      data {
+                          size
+                          type
+                      }
+                  }
+              }
+          }
+      }
+    \`
 
-let hashes = ${JSON.stringify(hashes)}
+    const tombstoneOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        query: query,
+        variables: {
+    	    "owners": ["${arweaveWalletAddress}"],
+    	    "tags": [{"name": "Tombstone", "values": ["true"]}]
+        }
+      })
+    };
 
-Promise.all(hashes.map(hash =>
-  fetch('https://caramel.infura-ipfs.io/ipfs/' + hash)
-  .then(res => res.text())
-))
-.then(posts =>
-  posts.map(markdown => converter.makeHtml(markdown))
-)
-.then(posts => {
-  let main = document.querySelector('#blog')
-  posts.forEach(p => {
-    let article = document.createElement('article')
-    article.innerHTML = p
-    main.appendChild(article)
-  })
-})
+    const options = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        query: query,
+        variables: {
+    	    "owners": ["${arweaveWalletAddress}"],
+    	    "tags": [{"name": "App-Name", "values": ["Caramel"]}, {"name": "Content-Type", "values": ["text/plain"]}]
+        }
+      })
+    };
 
+    fetch('https://arweave.net/graphql', tombstoneOptions)
+      .then(response => response.json())
+      .then(({ data: { transactions: { edges } } }) => {
+        let tombstones = edges.map(transaction => transaction.node.tags.find(tag => tag.name == "Id"))
+        let tombstoneIds = tombstones.map(ts => ts.value)
+
+        fetch('https://arweave.net/graphql', options)
+          .then(response => response.json())
+          .then(({ data: { transactions: { edges } } }) => edges.filter(edge => !tombstoneIds.includes(edge.node.id)))
+          .then((edges) => {
+            Promise.all(edges.map(transaction => {
+              return fetch("https://bnjr5drbo27dam2cmqdbijmmof7mnxlydfjoywtwbdofa3uzol7q.arweave.net/" + transaction.node.id)
+                .then(res => res.text())
+              }
+            ))
+              .then(posts => {
+                return posts.map(markdown => converter.makeHtml(markdown))
+              })
+            .then(posts => {
+              let main = document.querySelector('#blog')
+              posts.forEach(p => {
+                let article = document.createElement('article')
+                article.innerHTML = p
+                main.appendChild(article)
+              })
+            })
+            .catch(err => console.error(err));
+        })
+     })
   </script>
 </html>
 `

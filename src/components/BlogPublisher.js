@@ -5,8 +5,8 @@ import NewPost from './NewPost'
 
 import {
   gateways,
-  addFile,
   uploadHTML,
+  uploadFile,
   uploadMarkdown,
   getContentURL
 } from '../ipfs'
@@ -14,7 +14,9 @@ import {
 import storage from '../storage'
 import { generate } from '../blog/generator'
 import { convert } from '../blog/converter'
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
+
+import { generateArweaveWallet, encryptWallet, getAddress, upload } from '../utils/arweave'
 
 const ActionHeading = ({ ensName, onNewPost }) => (
   <div className="md:flex md:items-center md:justify-between">
@@ -35,28 +37,55 @@ const ActionHeading = ({ ensName, onNewPost }) => (
   </div>
 )
 
-function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEnabled, setNotificationsEnabled, setNotificationTitle }) {
+function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, rootCID, encryptedWalletData, setEncryptedWalletData, existingPosts = [] }) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
   const [isEditing, setIsEditing] = useState(false)
   const { address } = useAccount()
+  const { data: signer } = useSigner()
 
-  const onSubmit = async content => {
-    let text = content
-    return console.log('submitting', content)
-    // magic happens here
-    let mdResponse = await uploadMarkdown(text)
-    let html = await generate({
-      hashes: [mdResponse.Hash, ...existingPosts],
-      ens: ensName
-    })
-    let response = await uploadHTML(html)
-
-    if (callback) {
-      await callback(response.Hash)
+  useEffect(() => {
+    async function do_work(key) {
+      let keyA = JSON.parse(sessionStorage.getItem("arweaveKey"))
+      let enc = await encryptWallet(address, keyA)
+      setEncryptedWalletData(enc)
     }
 
-    setHash(response.Hash)
+    if ((encryptedWalletData == "undefined" || !encryptedWalletData) && !arweaveKey) {
+      do_work(arweaveKey)
+    }
+
+  }, [])
+
+  const onSubmit = async jsonContent => {
+    let text = jsonContent
+
+    if (rootCID)  {
+      // arweave upload
+      await upload(arweaveKey, text)
+      setHash(rootCID)
+    } else {
+      // upload encrypted arweave wallet to ipfs => get cid
+      let { Hash: encryptedWalletCID }  = await uploadFile({content: encryptedWalletData, name: "arweaveWallet", type: "text/plain"})
+
+      let html = await generate({
+        encryptedWalletCID,
+        arweaveWalletAddress,
+        ens: ensName
+      })
+
+      let response = await uploadHTML(html)
+
+      setHash(response.Hash)
+
+      if (callback) {
+        await callback(response.Hash)
+      }
+
+      // arweave upload
+      await upload(arweaveKey, text)
+    }
+
     setContentURL(`https://${ensName}.limo`)
   }
 
@@ -92,18 +121,6 @@ function BlogPublisher({ callback, ensName, existingPosts = [], notificationsEna
 
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
-      {/* isEditing ? (
-        <TextArea
-          onCancel={() => setIsEditing(false)}
-          onSubmit={onSubmit}
-          contentURL={contentURL}
-          notificationsEnabled={notificationsEnabled}
-          setNotificationsEnabled={setNotificationsEnabled}
-          setNotificationTitle={setNotificationTitle}
-        />
-      ) : (
-        <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
-      )*/}
       { isEditing
         ? <NewPost onSubmit={onSubmit} onCancel={() => setIsEditing(false)} />
         : <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
