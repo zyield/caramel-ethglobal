@@ -17,8 +17,11 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
       referrerpolicy="no-referrer"
     />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js"></script>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <meta charset="utf-8" />
     <meta
@@ -94,7 +97,66 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
     <span id="encryptedWalletCID">${encryptedWalletCID}</span>
   </body>
 
-  <script>
+  <script type="text/babel">
+    // https://github.com/rockettomatooo/slate-react-presentation
+    const SlatePresentationContext = React.createContext(null);
+    const { useContext } = React
+
+    function useSlatePresentation() {
+        return React.useContext(SlatePresentationContext);
+    }
+
+    function isText(value) {
+        return value instanceof Object && typeof value.text === 'string';
+    }
+    function isElement(value) {
+        return value instanceof Object && Array.isArray(value.children);
+    }
+
+    function Element({ element = { children: [] } }) {
+        const { renderElement } = useSlatePresentation();
+
+        return <React.Fragment>{renderElement({ attributes: {}, children: <Children children={element.children} />, element })}</React.Fragment>;
+    }
+
+    function Leaf({ leaf = { text: '' } }) {
+        const { renderLeaf, LeafWrapper } = useSlatePresentation();
+
+        return <React.Fragment>{renderLeaf({ attributes: {}, children: <LeafWrapper>{leaf.text}</LeafWrapper>, leaf, text: leaf.text })}</React.Fragment>;
+    }
+
+    function Children({ children = [] }) {
+        return (
+            <React.Fragment>
+                {children.map((child, i) => {
+                    if (isElement(child)) {
+                        return <Element key={i} element={child} />;
+                    } else {
+                        return <Leaf key={i} leaf={child} />;
+                    }
+                })}
+            </React.Fragment>
+        );
+    }
+
+    function SlateReactPresentation({ value = [], renderElement = props => <DefaultElement {...props} />, renderLeaf = props => <DefaultLeaf {...props} />, LeafWrapper = "span" }) {
+        return (
+            <SlatePresentationContext.Provider value={{ renderElement, renderLeaf, LeafWrapper }}>
+                <Children children={value} />
+            </SlatePresentationContext.Provider>
+        );
+    }
+
+    function DefaultElement({ children, element }) {
+        return <div>{children}</div>;
+    }
+    function DefaultLeaf({ children, leaf }) {
+        return <span>{children}</span>;
+    }
+
+
+    // logic
+
     let opts = {
       'omitExtraWLInCodeBlocks': true,
       'noHeaderId': false,
@@ -180,16 +242,16 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
                 .then(res => res.text())
               }
             ))
-              .then(posts => {
-                return posts.map(markdown => converter.makeHtml(markdown))
-              })
             .then(posts => {
-              let main = document.querySelector('#blog')
-              posts.forEach(p => {
-                let article = document.createElement('article')
-                article.innerHTML = p
-                main.appendChild(article)
-              })
+              let element = (
+                <SlateReactPresentation
+                  value={posts}
+                />
+              )
+               ReactDOM.render(
+                element,
+                document.getElementById('blog')
+              )
             })
             .catch(err => console.error(err));
         })

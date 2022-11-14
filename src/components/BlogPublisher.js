@@ -37,7 +37,16 @@ const ActionHeading = ({ ensName, onNewPost }) => (
   </div>
 )
 
-function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, rootCID, encryptedWalletData, setEncryptedWalletData, existingPosts = [] }) {
+function BlogPublisher({
+  callback,
+  arweaveWalletAddress,
+  ensName,
+  arweaveKey,
+  rootCID,
+  encryptedWalletData,
+  setEncryptedWalletData,
+  existingPosts = []
+}) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
   const [isEditing, setIsEditing] = useState(false)
@@ -52,21 +61,27 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
     }
 
     if ((encryptedWalletData == "undefined" || !encryptedWalletData) && !arweaveKey) {
-      do_work(arweaveKey)
+      do_work(arweaveKey).catch(console.error)
     }
 
   }, [])
 
   const onSubmit = async jsonContent => {
-    let text = jsonContent
+    let text = JSON.stringify(jsonContent)
 
     if (rootCID)  {
+      console.log('uploading with rootCID')
       // arweave upload
       await upload(arweaveKey, text)
       setHash(rootCID)
     } else {
+      console.log('no rootCID, uploading wallet to ipfs')
       // upload encrypted arweave wallet to ipfs => get cid
-      let { Hash: encryptedWalletCID }  = await uploadFile({content: encryptedWalletData, name: "arweaveWallet", type: "text/plain"})
+      let { Hash: encryptedWalletCID }  = await uploadFile({
+        content: encryptedWalletData,
+        name: "arweaveWallet",
+        type: "text/plain"
+      })
 
       let html = await generate({
         encryptedWalletCID,
@@ -77,6 +92,7 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
       let response = await uploadHTML(html)
 
       setHash(response.Hash)
+      console.log(response.Hash)
 
       if (callback) {
         await callback(response.Hash)

@@ -31,7 +31,7 @@ import {
 // * links
 // * more text controls / formatting
 
-const Button = props => <button type="button" {...props} className="mx-2">{ props.children }</button>
+const Button = props => <button type="button" {...props} className="mr-5">{ props.children }</button>
 const Toolbar = props => <div {...props}>{ props.children }</div>
 
 const HOTKEYS = {
