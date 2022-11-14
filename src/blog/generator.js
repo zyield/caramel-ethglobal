@@ -1,6 +1,148 @@
 // gets array of posts
 // generates html
 
+const presentationRaw = `
+// https://github.com/rockettomatooo/slate-react-presentation
+const SlatePresentationContext = React.createContext(null);
+const { useContext } = React
+
+function useSlatePresentation() {
+    return React.useContext(SlatePresentationContext);
+}
+
+function isText(value) {
+    return value instanceof Object && typeof value.text === 'string';
+}
+function isElement(value) {
+    return value instanceof Object && Array.isArray(value.children);
+}
+
+function SlateElement({ element = { children: [] } }) {
+    const { renderElement } = useSlatePresentation();
+
+    return <React.Fragment>{renderElement({ attributes: {}, children: <Children children={element.children} />, element })}</React.Fragment>;
+}
+
+function SlateLeaf({ leaf = { text: '' } }) {
+    const { renderLeaf, LeafWrapper } = useSlatePresentation();
+
+    return <React.Fragment>{renderLeaf({ attributes: {}, children: <LeafWrapper>{leaf.text}</LeafWrapper>, leaf, text: leaf.text })}</React.Fragment>;
+}
+
+function Children({ children = [] }) {
+    return (
+        <React.Fragment>
+            {children.map((child, i) => {
+                if (isElement(child)) {
+                    return <SlateElement key={i} element={child} />;
+                } else {
+                    return <SlateLeaf key={i} leaf={child} />;
+                }
+            })}
+        </React.Fragment>
+    );
+}
+
+function SlateReactPresentation({ value = [], renderElement = props => <DefaultElement {...props} />, renderLeaf = props => <DefaultLeaf {...props} />, LeafWrapper = "span" }) {
+    return (
+        <SlatePresentationContext.Provider value={{ renderElement, renderLeaf, LeafWrapper }}>
+            <Children children={value} />
+        </SlatePresentationContext.Provider>
+    );
+}
+
+function DefaultElement({ children, element }) {
+    return <div>{children}</div>;
+}
+function DefaultLeaf({ children, leaf }) {
+    return <span>{children}</span>;
+}
+
+const Element = ({ attributes, children, element }) => {
+  const style = { textAlign: element.align }
+  switch (element.type) {
+    case 'paragraph':
+      return (
+        <p style={style} {...attributes} className="dark:text-zinc-400">
+          { children }
+        </p>
+      )
+    case 'block-code':
+      return (
+        <pre style={style} {...attributes}>
+          <code>{children}</code>
+        </pre>
+      )
+    case 'block-quote':
+      return (
+        <blockquote style={style} {...attributes}>
+          {children}
+        </blockquote>
+      )
+    case 'bulleted-list':
+      return (
+        <ul style={style} {...attributes}>
+          {children}
+        </ul>
+      )
+    case 'heading-one':
+      return (
+        <h1 style={style} {...attributes} className="mt-2 block text-center text-3xl font-bold leading-8 tracking-tight sm:text-4xl">
+          {children}
+        </h1>
+      )
+    case 'heading-two':
+      return (
+        <h2 style={style} {...attributes} className="mt-2 block text-center text-xl font-bold leading-8 tracking-tight sm:text-2xl">
+          {children}
+        </h2>
+      )
+    case 'list-item':
+      return (
+        <li style={style} {...attributes}>
+          {children}
+        </li>
+      )
+    case 'numbered-list':
+      return (
+        <ol style={style} {...attributes}>
+          {children}
+        </ol>
+      )
+    default:
+      return (
+        <p style={style} {...attributes}>
+          {children}
+        </p>
+      )
+  }
+}
+
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) {
+    children = <strong>{children}</strong>
+  }
+
+  if (leaf.code) {
+    children = <code>{children}</code>
+  }
+
+  if (leaf.italic) {
+    children = <em>{children}</em>
+  }
+
+  if (leaf.underline) {
+    children = <u>{children}</u>
+  }
+
+  return <span {...attributes}>{children}</span>
+}
+
+const renderElement = props => <Element {...props} />
+const renderLeaf = props => <Leaf {...props} />
+`
+
+
 export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -98,63 +240,7 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
   </body>
 
   <script type="text/babel">
-    // https://github.com/rockettomatooo/slate-react-presentation
-    const SlatePresentationContext = React.createContext(null);
-    const { useContext } = React
-
-    function useSlatePresentation() {
-        return React.useContext(SlatePresentationContext);
-    }
-
-    function isText(value) {
-        return value instanceof Object && typeof value.text === 'string';
-    }
-    function isElement(value) {
-        return value instanceof Object && Array.isArray(value.children);
-    }
-
-    function Element({ element = { children: [] } }) {
-        const { renderElement } = useSlatePresentation();
-
-        return <React.Fragment>{renderElement({ attributes: {}, children: <Children children={element.children} />, element })}</React.Fragment>;
-    }
-
-    function Leaf({ leaf = { text: '' } }) {
-        const { renderLeaf, LeafWrapper } = useSlatePresentation();
-
-        return <React.Fragment>{renderLeaf({ attributes: {}, children: <LeafWrapper>{leaf.text}</LeafWrapper>, leaf, text: leaf.text })}</React.Fragment>;
-    }
-
-    function Children({ children = [] }) {
-        return (
-            <React.Fragment>
-                {children.map((child, i) => {
-                    if (isElement(child)) {
-                        return <Element key={i} element={child} />;
-                    } else {
-                        return <Leaf key={i} leaf={child} />;
-                    }
-                })}
-            </React.Fragment>
-        );
-    }
-
-    function SlateReactPresentation({ value = [], renderElement = props => <DefaultElement {...props} />, renderLeaf = props => <DefaultLeaf {...props} />, LeafWrapper = "span" }) {
-        return (
-            <SlatePresentationContext.Provider value={{ renderElement, renderLeaf, LeafWrapper }}>
-                <Children children={value} />
-            </SlatePresentationContext.Provider>
-        );
-    }
-
-    function DefaultElement({ children, element }) {
-        return <div>{children}</div>;
-    }
-    function DefaultLeaf({ children, leaf }) {
-        return <span>{children}</span>;
-    }
-
-
+    ${presentationRaw}
     // logic
 
     let opts = {
@@ -239,17 +325,21 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
           .then((edges) => {
             Promise.all(edges.map(transaction => {
               return fetch("https://bnjr5drbo27dam2cmqdbijmmof7mnxlydfjoywtwbdofa3uzol7q.arweave.net/" + transaction.node.id)
-                .then(res => res.text())
+                .then(res => res.json())
               }
             ))
             .then(posts => {
-              let element = (
-                <SlateReactPresentation
-                  value={posts}
-                />
+              let blog = posts.map(p =>
+                <article>
+                  <SlateReactPresentation
+                    renderElement={renderElement}
+                    renderLeaf={renderLeaf}
+                    value={p}
+                  />
+                </article>
               )
-               ReactDOM.render(
-                element,
+              ReactDOM.render(
+                blog,
                 document.getElementById('blog')
               )
             })
