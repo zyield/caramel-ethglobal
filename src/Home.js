@@ -115,6 +115,7 @@ function Home() {
     let ipfsns = multiC.addPrefix('ipfs-ns', multihash)
     let contentHash =
       '0x' + toHexString(ipfsns)
+    console.log(ensName)
     let nameHash = namehash.hash(ensName || manualEnsName)
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
   }
@@ -132,7 +133,7 @@ function Home() {
   useEffect(() => {
     if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') {
       setArweaveWalletNotSet(true)
-      return
+      return console.log('wallet not set')
     }
 
     console.log("fetching root CID", contentHash)
@@ -156,6 +157,7 @@ function Home() {
         })
         .then(setArweaveIds)
       })
+      .catch(console.error)
 
   }, [contentHash])
 

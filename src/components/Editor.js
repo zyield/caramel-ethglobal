@@ -209,7 +209,7 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false
 }
 
-const Element = ({ attributes, children, element }) => {
+export const Element = ({ attributes, children, element }) => {
   const style = { textAlign: element.align }
   switch (element.type) {
     case 'paragraph':
@@ -269,7 +269,7 @@ const Element = ({ attributes, children, element }) => {
   }
 }
 
-const Leaf = ({ attributes, children, leaf }) => {
+export const Leaf = ({ attributes, children, leaf }) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>
   }

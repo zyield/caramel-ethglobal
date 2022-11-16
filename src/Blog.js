@@ -112,7 +112,6 @@ const Blog = ({ callback, ensName, existingPosts, setExistingPosts, setEncrypted
         fetch(`https://bnjr5drbo27dam2cmqdbijmmof7mnxlydfjoywtwbdofa3uzol7q.arweave.net/${id}`).then(res => res.text())
       )
     )
-      .then(posts => posts.map(markdown => convert(markdown)))
       .then(setPosts)
   }, [existingPosts])
 
@@ -124,10 +123,14 @@ const Blog = ({ callback, ensName, existingPosts, setExistingPosts, setEncrypted
         {posts.map((post, i) => (
           <div className="relative" key={i}>
             <RemoveButton
-              onClick={() => setSelectedForRemoval(existingPosts[i])}
+              onClick={() =>
+                // TODO
+                console.log('TODO: removal feature')
+                // setSelectedForRemoval(existingPosts[i])
+              }
               className="absolute right-0 top-2"
             />
-            <Post html={post} />
+            <Post content={post} />
           </div>
         ))}
       </section>
