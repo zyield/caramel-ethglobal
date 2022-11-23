@@ -15,6 +15,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <meta charset="utf-8" />
     <meta
       name="description"
@@ -77,10 +81,85 @@
     </div>
   </body>
 
-  <script>
-    const converter = new showdown.Converter()
+  <script type="text/babel">
+    // https://github.com/rockettomatooo/slate-react-presentation
+    const SlatePresentationContext = React.createContext(null);
+    const { useContext } = React
 
-    let walletAddress = "JsB8Ee-oL9KxJtrZR2i5ew_ZpWraxmOWQRexsu3WRE8"
+    function useSlatePresentation() {
+        return React.useContext(SlatePresentationContext);
+    }
+
+    function isText(value) {
+        return value instanceof Object && typeof value.text === 'string';
+    }
+    function isElement(value) {
+        return value instanceof Object && Array.isArray(value.children);
+    }
+
+    function StateElement({ element = { children: [] } }) {
+        const { renderElement } = useSlatePresentation();
+
+        return <React.Fragment>{renderElement({ attributes: {}, children: <Children children={element.children} />, element })}</React.Fragment>;
+    }
+
+    function StateLeaf({ leaf = { text: '' } }) {
+        const { renderLeaf, LeafWrapper } = useSlatePresentation();
+
+        return <React.Fragment>{renderLeaf({ attributes: {}, children: <LeafWrapper>{leaf.text}</LeafWrapper>, leaf, text: leaf.text })}</React.Fragment>;
+    }
+
+    function Children({ children = [] }) {
+        return (
+            <React.Fragment>
+                {children.map((child, i) => {
+                    if (isElement(child)) {
+                        return <StateElement key={i} element={child} />;
+                    } else {
+                        return <StateLeaf key={i} leaf={child} />;
+                    }
+                })}
+            </React.Fragment>
+        );
+    }
+
+    function SlateReactPresentation({ value = [], renderElement = props => <DefaultElement {...props} />, renderLeaf = props => <DefaultLeaf {...props} />, LeafWrapper = "span" }) {
+        return (
+            <SlatePresentationContext.Provider value={{ renderElement, renderLeaf, LeafWrapper }}>
+                <Children children={value} />
+            </SlatePresentationContext.Provider>
+        );
+    }
+
+    function DefaultElement({ children, element }) {
+        return <div>{children}</div>;
+    }
+    function DefaultLeaf({ children, leaf }) {
+        return <span>{children}</span>;
+    }
+
+
+    // logic
+
+    let opts = {
+      'omitExtraWLInCodeBlocks': true,
+      'noHeaderId': false,
+      'parseImgDimensions': true,
+      'simplifiedAutoLink': true,
+      'literalMidWordUnderscores': true,
+      'strikethrough': true,
+      'tables': true,
+      'tablesHeaderId': false,
+      'ghCodeBlocks': true,
+      'tasklists': true,
+      'smoothLivePreview': true,
+      'prefixHeaderId': false,
+      'disableForced4SpacesIndentedSublists': false,
+      'ghCompatibleHeaderId': true,
+      'smartIndentationFix': false
+    }
+
+    const converter = new showdown.Converter(opts)
 
     const query = `
       query getTransactions (
@@ -108,36 +187,147 @@
       }
     `
 
-const options = {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({
-    query: query,
-    variables: {
-	    "owners": [walletAddress],
-	    "tags": [{"name": "App-Name", "values": ["Caramel"]}]
-    }
-  })
-};
-
-fetch('https://arweave.net/graphql', options)
-  .then(response => response.json())
-  .then(({ data: { transactions: { edges } } }) => {
-    Promise.all(edges.map(transaction =>
-      fetch(`https://bnjr5drbo27dam2cmqdbijmmof7mnxlydfjoywtwbdofa3uzol7q.arweave.net/${transaction.node.id}`)
-        .then(res => res.text())
-    ))
-    .then(posts => posts.map(markdown => converter.makeHtml(markdown)))
-    .then(posts => {
-      let main = document.querySelector('#blog')
-      posts.forEach(p => {
-        let article = document.createElement('article')
-        article.innerHTML = p
-        main.appendChild(article)
+    const tombstoneOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        query: query,
+        variables: {
+    	    "owners": ["${arweaveWalletAddress}"],
+    	    "tags": [{"name": "Tombstone", "values": ["true"]}]
+        }
       })
-    })
-    .catch(err => console.error(err));
-  })
+    };
 
+    const options = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        query: query,
+        variables: {
+    	    "owners": ["puxKtciVJzd-DNsNAqNwyTvkQ5xECc659Jin5Lpqfz0"],
+    	    "tags": [{"name": "App-Name", "values": ["Caramel"]}, {"name": "Content-Type", "values": ["text/plain"]}]
+        }
+      })
+    };
+
+
+    const Element = ({ attributes, children, element }) => {
+      const style = { textAlign: element.align }
+      switch (element.type) {
+        case 'paragraph':
+          return (
+            <p style={style} {...attributes} className="dark:text-zinc-400">
+              { children }
+            </p>
+          )
+        case 'block-code':
+          return (
+            <pre style={style} {...attributes}>
+              <code>{children}</code>
+            </pre>
+          )
+        case 'block-quote':
+          return (
+            <blockquote style={style} {...attributes}>
+              {children}
+            </blockquote>
+          )
+        case 'bulleted-list':
+          return (
+            <ul style={style} {...attributes}>
+              {children}
+            </ul>
+          )
+        case 'heading-one':
+          return (
+            <h1 style={style} {...attributes} className="mt-2 block text-center text-3xl font-bold leading-8 tracking-tight sm:text-4xl">
+              {children}
+            </h1>
+          )
+        case 'heading-two':
+          return (
+            <h2 style={style} {...attributes} className="mt-2 block text-center text-xl font-bold leading-8 tracking-tight sm:text-2xl">
+              {children}
+            </h2>
+          )
+        case 'list-item':
+          return (
+            <li style={style} {...attributes}>
+              {children}
+            </li>
+          )
+        case 'numbered-list':
+          return (
+            <ol style={style} {...attributes}>
+              {children}
+            </ol>
+          )
+        default:
+          return (
+            <p style={style} {...attributes}>
+              {children}
+            </p>
+          )
+      }
+    }
+
+    const Leaf = ({ attributes, children, leaf }) => {
+      if (leaf.bold) {
+        children = <strong>{children}</strong>
+      }
+
+      if (leaf.code) {
+        children = <code>{children}</code>
+      }
+
+      if (leaf.italic) {
+        children = <em>{children}</em>
+      }
+
+      if (leaf.underline) {
+        children = <u>{children}</u>
+      }
+
+      return <span {...attributes}>{children}</span>
+    }
+
+    const renderElement = props => <Element {...props} />
+    const renderLeaf = props => <Leaf {...props} />
+
+    fetch('https://arweave.net/graphql', tombstoneOptions)
+      .then(response => response.json())
+      .then(({ data: { transactions: { edges } } }) => {
+        let tombstones = edges.map(transaction => transaction.node.tags.find(tag => tag.name == "Id"))
+        let tombstoneIds = tombstones.map(ts => ts.value)
+
+        fetch('https://arweave.net/graphql', options)
+          .then(response => response.json())
+          .then(({ data: { transactions: { edges } } }) => edges.filter(edge => !tombstoneIds.includes(edge.node.id)))
+          .then((edges) => {
+            Promise.all(edges.map(transaction => {
+              return fetch("https://bnjr5drbo27dam2cmqdbijmmof7mnxlydfjoywtwbdofa3uzol7q.arweave.net/" + transaction.node.id)
+                .then(res => res.json())
+              }
+            ))
+            .then(posts => {
+              console.log(posts)
+              let blog = posts.map(p =>
+                <article>
+                  <SlateReactPresentation
+                    renderElement={renderElement}
+                    renderLeaf={renderLeaf}
+                    value={p}
+                  />
+                </article>
+              )
+               ReactDOM.render(
+                blog,
+                document.getElementById('blog')
+              )
+            })
+            .catch(err => console.error(err));
+        })
+     })
   </script>
 </html>

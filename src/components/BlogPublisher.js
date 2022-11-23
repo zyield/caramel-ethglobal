@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import TextArea from './TextArea'
 import ContentPopup from './ContentPopup'
+import NewPost from './NewPost'
 
 import {
   gateways,
@@ -36,7 +37,16 @@ const ActionHeading = ({ ensName, onNewPost }) => (
   </div>
 )
 
-function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, rootCID, encryptedWalletData, setEncryptedWalletData, existingPosts = [] }) {
+function BlogPublisher({
+  callback,
+  arweaveWalletAddress,
+  ensName,
+  arweaveKey,
+  rootCID,
+  encryptedWalletData,
+  setEncryptedWalletData,
+  existingPosts = []
+}) {
   const [contentURL, setContentURL] = useState(null)
   const [hash, setHash] = useState()
   const [isEditing, setIsEditing] = useState(false)
@@ -51,19 +61,27 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
     }
 
     if ((encryptedWalletData == "undefined" || !encryptedWalletData) && !arweaveKey) {
-      do_work(arweaveKey)
+      do_work(arweaveKey).catch(console.error)
     }
 
   }, [])
 
-  const onSubmit = async text => {
+  const onSubmit = async jsonContent => {
+    let text = JSON.stringify(jsonContent)
+
     if (rootCID)  {
+      console.log('uploading with rootCID')
       // arweave upload
       await upload(arweaveKey, text)
       setHash(rootCID)
     } else {
+      console.log('no rootCID, uploading wallet to ipfs')
       // upload encrypted arweave wallet to ipfs => get cid
-      let { Hash: encryptedWalletCID }  = await uploadFile({content: encryptedWalletData, name: "arweaveWallet", type: "text/plain"})
+      let { Hash: encryptedWalletCID }  = await uploadFile({
+        content: encryptedWalletData,
+        name: "arweaveWallet",
+        type: "text/plain"
+      })
 
       let html = await generate({
         encryptedWalletCID,
@@ -74,6 +92,7 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
       let response = await uploadHTML(html)
 
       setHash(response.Hash)
+      console.log(response.Hash)
 
       if (callback) {
         await callback(response.Hash)
@@ -81,7 +100,6 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
 
       // arweave upload
       await upload(arweaveKey, text)
-
     }
 
     setContentURL(`https://${ensName}.limo`)
@@ -119,15 +137,10 @@ function BlogPublisher({ callback, arweaveWalletAddress, ensName, arweaveKey, ro
 
   return (
     <div style={{ maxWidth: 750, margin: '0 auto' }}>
-      {isEditing ? (
-        <TextArea
-          onCancel={() => setIsEditing(false)}
-          onSubmit={onSubmit}
-          contentURL={contentURL}
-        />
-      ) : (
-        <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
-      )}
+      { isEditing
+        ? <NewPost onSubmit={onSubmit} onCancel={() => setIsEditing(false)} />
+        : <ActionHeading ensName={ensName} onNewPost={() => setIsEditing(true)} />
+      }
     </div>
   )
 }
