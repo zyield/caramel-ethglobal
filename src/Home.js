@@ -15,7 +15,6 @@ import {
   useSigner
 } from 'wagmi'
 
-import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletIcon } from '@heroicons/react/24/outline'
 import namehash from '@ensdomains/eth-ens-namehash'
 
@@ -24,6 +23,7 @@ import multiC from 'multicodec'
 import CID from 'cids'
 
 import { addresses } from './utils'
+import { fetchTransactions, fetchTombstones } from './utils/arweave'
 
 import Blog from './Blog'
 import Hero from './components/Hero'
@@ -35,8 +35,10 @@ import Connect from './components/Connect'
 import PublicResolverABI from './abis/PublicResolver.json'
 
 import { gateways } from './ipfs'
-import { extractHashes } from './blog/parser'
+import { extractHashes, extractEncryptedWalletCID, extractArweaveWalletAddress } from './blog/parser'
 import mainLogoWhite from './images/logo_white.svg'
+
+import { useArweaveWalletStore } from './providers/ArweaveWalletContext'
 
 // stolen from
 // https://github.com/ensdomains/content-hash/blob/master/src/profiles.js
@@ -48,6 +50,8 @@ const hexStringToBuffer = hex => {
   else res = hex
   return multiH.fromHexString(res)
 }
+
+const toHexString = arr => Array.from(arr, i => i.toString(16).padStart(2, "0")).join("")
 
 const decodeContentHash = contentHash => {
   let buffer = hexStringToBuffer(contentHash)
@@ -61,15 +65,21 @@ const decodeContentHash = contentHash => {
 
 function Home() {
   const { chain } = useNetwork()
+  const { provider } = useProvider()
   const { address, isLoading, isConnected } = useAccount({ fetchEns: true })
   const { data: ensName } = useEnsName({ address })
   const { data: signer } = useSigner()
-
   const [ensChecked, setEnsChecked] = useState(false)
   const [lookupClicked, setLookupClicked] = useState(false)
   const [manualEnsName, setManualEnsName] = useState('')
   const [manualEnsValid, setManualEnsValid] = useState()
-  const [savedPostsHashes, setPostHashes] = useState([])
+  const [arweaveIds, setArweaveIds] = useState([])
+  const [arweaveWalletCID, setArweaveWalletCID] = useState()
+  const [arweaveWalletAddress, setArweaveWalletAddress] = useState()
+  const [encryptedWalletData, setEncryptedWalletData] = useState()
+  const [rootCID, setRootCID] = useState()
+  const arweaveStore = useArweaveWalletStore()
+  const [arweaveWalletNotSet, setArweaveWalletNotSet] = useState()
 
   const toHex = d =>
     d.reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
@@ -96,34 +106,72 @@ function Home() {
     setLookupClicked(true)
     if (manualEnsName && !isLoadingEnsAddress) {
       setManualEnsValid(ensAddress?.toLowerCase() === address?.toLowerCase())
+      //setManualEnsValid(true)
     }
   }
 
   const updateContentHash = async value => {
     const multihash = multiH.fromB58String(value)
+    let ipfsns = multiC.addPrefix('ipfs-ns', multihash)
     let contentHash =
-      '0x' + multiC.addPrefix('ipfs-ns', multihash).toString('hex')
+      '0x' + toHexString(ipfsns)
+    console.log(ensName)
     let nameHash = namehash.hash(ensName || manualEnsName)
     await write?.({ recklesslySetUnpreparedArgs: [nameHash, contentHash] })
   }
 
-  const { data: contentHash } = useContractRead({
+  const { data: contentHash, error: errorContentHash } = useContractRead({
     addressOrName: addresses[chain?.network]?.ens_public_resolver,
     contractInterface: PublicResolverABI,
     functionName: 'contenthash',
     args: [namehash.hash(ensName || manualEnsName)]
   })
 
+  console.log("contentHash", contentHash)
+  console.log("errorContentHash", errorContentHash)
+
   useEffect(() => {
-    console.log("content hash", contentHash)
-    if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') return // no hash or no posts yet
+    if (!contentHash || contentHash == '0x' || contentHash == '0x0000000000000000000000000000000000000000') {
+      setArweaveWalletNotSet(true)
+      return console.log('wallet not set')
+    }
+
+    console.log("fetching root CID", contentHash)
 
     let decoded = decodeContentHash(contentHash)
+    setRootCID(decoded)
+
     fetch(`${gateways.infura}/${decoded}`)
       .then(res => res.text())
-      .then(extractHashes)
-      .then(setPostHashes)
+      .then((html) => {
+        let address = extractArweaveWalletAddress(html)
+        let walletCID = extractEncryptedWalletCID(html)
+        return { address, walletCID }
+      })
+      .then(({ address, walletCID}) => {
+        setArweaveWalletAddress(address)
+        setArweaveWalletCID(walletCID)
+
+        fetchTombstones(address).then((tombstones) => {
+          return fetchTransactions(address, tombstones)
+        })
+        .then(setArweaveIds)
+      })
+      .catch(console.error)
+
   }, [contentHash])
+
+  useEffect(() => {
+    function fetchWalletData(cid) {
+      fetch(`${gateways.infura}/${cid}`)
+      .then(res => res.text())
+      .then(setEncryptedWalletData)
+    }
+
+    if (arweaveWalletCID) {
+      fetchWalletData(arweaveWalletCID)
+    }
+  }, [arweaveWalletCID])
 
   if (isLoading) return <Loading />
 
@@ -147,7 +195,11 @@ function Home() {
         <Blog
           callback={updateContentHash}
           ensName={ensName || manualEnsName}
-          existingPosts={savedPostsHashes}
+          existingPosts={arweaveIds}
+          setEncryptedWalletData={setEncryptedWalletData}
+          setExistingPosts={setArweaveIds}
+          encryptedWalletData={encryptedWalletData}
+          rootCID={rootCID}
         />
         {data && data?.hash && <TransactionModal hash={data?.hash} />}
       </div>
@@ -164,6 +216,8 @@ function Home() {
           If you have an ENS domain but didn't setup your name server, enter
           your domain below
         </p>
+
+
         {manualEnsValid ? (
           <div className="flex justify-center">
             <EnsDomain
@@ -201,7 +255,11 @@ function Home() {
             <Blog
               callback={updateContentHash}
               ensName={ensName || manualEnsName}
-              existingPosts={savedPostsHashes}
+              existingPosts={arweaveIds}
+              setEncryptedWalletData={setEncryptedWalletData}
+              setExistingPosts={setArweaveIds}
+              rootCID={rootCID}
+              encryptedWalletData={encryptedWalletData}
             />
           </div>
         ) : manualEnsName && lookupClicked ? (
@@ -235,7 +293,11 @@ function Home() {
             <Blog
               callback={updateContentHash}
               ensName={ensName || manualEnsName}
-              existingPosts={savedPostsHashes}
+              existingPosts={arweaveIds}
+              setExistingPosts={setArweaveIds}
+              setEncryptedWalletData={setEncryptedWalletData}
+              rootCID={rootCID}
+              encryptedWalletData={encryptedWalletData}
             />
           </div>
         ) : null}

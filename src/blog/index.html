@@ -1,149 +1,3 @@
-// gets array of posts
-// generates html
-
-const presentationRaw = `
-// https://github.com/rockettomatooo/slate-react-presentation
-const SlatePresentationContext = React.createContext(null);
-const { useContext } = React
-
-function useSlatePresentation() {
-    return React.useContext(SlatePresentationContext);
-}
-
-function isText(value) {
-    return value instanceof Object && typeof value.text === 'string';
-}
-function isElement(value) {
-    return value instanceof Object && Array.isArray(value.children);
-}
-
-function SlateElement({ element = { children: [] } }) {
-    const { renderElement } = useSlatePresentation();
-
-    return <React.Fragment>{renderElement({ attributes: {}, children: <Children children={element.children} />, element })}</React.Fragment>;
-}
-
-function SlateLeaf({ leaf = { text: '' } }) {
-    const { renderLeaf, LeafWrapper } = useSlatePresentation();
-
-    return <React.Fragment>{renderLeaf({ attributes: {}, children: <LeafWrapper>{leaf.text}</LeafWrapper>, leaf, text: leaf.text })}</React.Fragment>;
-}
-
-function Children({ children = [] }) {
-    return (
-        <React.Fragment>
-            {children.map((child, i) => {
-                if (isElement(child)) {
-                    return <SlateElement key={i} element={child} />;
-                } else {
-                    return <SlateLeaf key={i} leaf={child} />;
-                }
-            })}
-        </React.Fragment>
-    );
-}
-
-function SlateReactPresentation({ value = [], renderElement = props => <DefaultElement {...props} />, renderLeaf = props => <DefaultLeaf {...props} />, LeafWrapper = "span" }) {
-    return (
-        <SlatePresentationContext.Provider value={{ renderElement, renderLeaf, LeafWrapper }}>
-            <Children children={value} />
-        </SlatePresentationContext.Provider>
-    );
-}
-
-function DefaultElement({ children, element }) {
-    return <div>{children}</div>;
-}
-function DefaultLeaf({ children, leaf }) {
-    return <span>{children}</span>;
-}
-
-const Element = ({ attributes, children, element }) => {
-  const style = { textAlign: element.align }
-  switch (element.type) {
-    case 'paragraph':
-      return (
-        <p style={style} {...attributes} className="dark:text-zinc-400">
-          { children }
-        </p>
-      )
-    case 'block-code':
-      return (
-        <pre style={style} {...attributes}>
-          <code>{children}</code>
-        </pre>
-      )
-    case 'block-quote':
-      return (
-        <blockquote style={style} {...attributes}>
-          {children}
-        </blockquote>
-      )
-    case 'bulleted-list':
-      return (
-        <ul style={style} {...attributes}>
-          {children}
-        </ul>
-      )
-    case 'heading-one':
-      return (
-        <h1 style={style} {...attributes} className="mt-2 block text-center text-3xl font-bold leading-8 tracking-tight sm:text-4xl">
-          {children}
-        </h1>
-      )
-    case 'heading-two':
-      return (
-        <h2 style={style} {...attributes} className="mt-2 block text-center text-xl font-bold leading-8 tracking-tight sm:text-2xl">
-          {children}
-        </h2>
-      )
-    case 'list-item':
-      return (
-        <li style={style} {...attributes}>
-          {children}
-        </li>
-      )
-    case 'numbered-list':
-      return (
-        <ol style={style} {...attributes}>
-          {children}
-        </ol>
-      )
-    default:
-      return (
-        <p style={style} {...attributes}>
-          {children}
-        </p>
-      )
-  }
-}
-
-const Leaf = ({ attributes, children, leaf }) => {
-  if (leaf.bold) {
-    children = <strong>{children}</strong>
-  }
-
-  if (leaf.code) {
-    children = <code>{children}</code>
-  }
-
-  if (leaf.italic) {
-    children = <em>{children}</em>
-  }
-
-  if (leaf.underline) {
-    children = <u>{children}</u>
-  }
-
-  return <span {...attributes}>{children}</span>
-}
-
-const renderElement = props => <Element {...props} />
-const renderLeaf = props => <Leaf {...props} />
-`
-
-
-export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -159,7 +13,7 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
       referrerpolicy="no-referrer"
     />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -170,16 +24,8 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
       name="description"
       content="My forever blog"
     />
-    <title>${ens || 'Crml'} - Home</title>
+    <title>Crml blog</title>
     <style>
-      .toggle-content {
-      	display: none;
-      }
-
-      .toggle-content.is-visible {
-      	display: inline;
-      }
-
       body {
         background-color: rgba(229, 231, 235, .2);
       }
@@ -221,26 +67,78 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
         width: 100%;
         border-bottom: 1px solid rgb(244, 244, 245);
       }
-      #encryptedWalletCID {
-        display: none;
-      }
     </style>
   </head>
   <body>
     <div>
       <header>
-        <h1>${ens}</h1>
+        <h1>tzumby.eth</h1>
       </header>
       <main>
         <section id="blog">
         </section>
       </main>
     </div>
-    <span id="encryptedWalletCID">${encryptedWalletCID}</span>
   </body>
 
   <script type="text/babel">
-    ${presentationRaw}
+    // https://github.com/rockettomatooo/slate-react-presentation
+    const SlatePresentationContext = React.createContext(null);
+    const { useContext } = React
+
+    function useSlatePresentation() {
+        return React.useContext(SlatePresentationContext);
+    }
+
+    function isText(value) {
+        return value instanceof Object && typeof value.text === 'string';
+    }
+    function isElement(value) {
+        return value instanceof Object && Array.isArray(value.children);
+    }
+
+    function StateElement({ element = { children: [] } }) {
+        const { renderElement } = useSlatePresentation();
+
+        return <React.Fragment>{renderElement({ attributes: {}, children: <Children children={element.children} />, element })}</React.Fragment>;
+    }
+
+    function StateLeaf({ leaf = { text: '' } }) {
+        const { renderLeaf, LeafWrapper } = useSlatePresentation();
+
+        return <React.Fragment>{renderLeaf({ attributes: {}, children: <LeafWrapper>{leaf.text}</LeafWrapper>, leaf, text: leaf.text })}</React.Fragment>;
+    }
+
+    function Children({ children = [] }) {
+        return (
+            <React.Fragment>
+                {children.map((child, i) => {
+                    if (isElement(child)) {
+                        return <StateElement key={i} element={child} />;
+                    } else {
+                        return <StateLeaf key={i} leaf={child} />;
+                    }
+                })}
+            </React.Fragment>
+        );
+    }
+
+    function SlateReactPresentation({ value = [], renderElement = props => <DefaultElement {...props} />, renderLeaf = props => <DefaultLeaf {...props} />, LeafWrapper = "span" }) {
+        return (
+            <SlatePresentationContext.Provider value={{ renderElement, renderLeaf, LeafWrapper }}>
+                <Children children={value} />
+            </SlatePresentationContext.Provider>
+        );
+    }
+
+    function DefaultElement({ children, element }) {
+        return <div>{children}</div>;
+    }
+    function DefaultLeaf({ children, leaf }) {
+        return <span>{children}</span>;
+    }
+
+
     // logic
 
     let opts = {
@@ -263,7 +161,7 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
 
     const converter = new showdown.Converter(opts)
 
-    const query = \`
+    const query = `
       query getTransactions (
           $owners: [String!]
           $tags: [TagFilter!]
@@ -287,7 +185,7 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
               }
           }
       }
-    \`
+    `
 
     const tombstoneOptions = {
       method: 'POST',
@@ -307,11 +205,95 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
       body: JSON.stringify({
         query: query,
         variables: {
-    	    "owners": ["${arweaveWalletAddress}"],
+    	    "owners": ["puxKtciVJzd-DNsNAqNwyTvkQ5xECc659Jin5Lpqfz0"],
     	    "tags": [{"name": "App-Name", "values": ["Caramel"]}, {"name": "Content-Type", "values": ["text/plain"]}]
         }
       })
     };
+
+
+    const Element = ({ attributes, children, element }) => {
+      const style = { textAlign: element.align }
+      switch (element.type) {
+        case 'paragraph':
+          return (
+            <p style={style} {...attributes} className="dark:text-zinc-400">
+              { children }
+            </p>
+          )
+        case 'block-code':
+          return (
+            <pre style={style} {...attributes}>
+              <code>{children}</code>
+            </pre>
+          )
+        case 'block-quote':
+          return (
+            <blockquote style={style} {...attributes}>
+              {children}
+            </blockquote>
+          )
+        case 'bulleted-list':
+          return (
+            <ul style={style} {...attributes}>
+              {children}
+            </ul>
+          )
+        case 'heading-one':
+          return (
+            <h1 style={style} {...attributes} className="mt-2 block text-center text-3xl font-bold leading-8 tracking-tight sm:text-4xl">
+              {children}
+            </h1>
+          )
+        case 'heading-two':
+          return (
+            <h2 style={style} {...attributes} className="mt-2 block text-center text-xl font-bold leading-8 tracking-tight sm:text-2xl">
+              {children}
+            </h2>
+          )
+        case 'list-item':
+          return (
+            <li style={style} {...attributes}>
+              {children}
+            </li>
+          )
+        case 'numbered-list':
+          return (
+            <ol style={style} {...attributes}>
+              {children}
+            </ol>
+          )
+        default:
+          return (
+            <p style={style} {...attributes}>
+              {children}
+            </p>
+          )
+      }
+    }
+
+    const Leaf = ({ attributes, children, leaf }) => {
+      if (leaf.bold) {
+        children = <strong>{children}</strong>
+      }
+
+      if (leaf.code) {
+        children = <code>{children}</code>
+      }
+
+      if (leaf.italic) {
+        children = <em>{children}</em>
+      }
+
+      if (leaf.underline) {
+        children = <u>{children}</u>
+      }
+
+      return <span {...attributes}>{children}</span>
+    }
+
+    const renderElement = props => <Element {...props} />
+    const renderLeaf = props => <Leaf {...props} />
 
     fetch('https://arweave.net/graphql', tombstoneOptions)
       .then(response => response.json())
@@ -329,6 +311,7 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
               }
             ))
             .then(posts => {
+              console.log(posts)
               let blog = posts.map(p =>
                 <article>
                   <SlateReactPresentation
@@ -338,7 +321,7 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
                   />
                 </article>
               )
-              ReactDOM.render(
+               ReactDOM.render(
                 blog,
                 document.getElementById('blog')
               )
@@ -348,4 +331,3 @@ export const generate = ({ ens, arweaveWalletAddress, encryptedWalletCID }) => `
      })
   </script>
 </html>
-`

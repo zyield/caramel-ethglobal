@@ -6,6 +6,10 @@ import {
   isValidContenthash
 } from './content_hash'
 
+import {
+  generateArweaveWallet
+} from './arweave'
+
 import { addresses } from './network'
 
 const truncateAddress = address => {

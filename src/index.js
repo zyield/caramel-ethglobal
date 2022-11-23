@@ -5,6 +5,8 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 
+import { ArweaveWalletProvider  } from './providers/ArweaveWalletContext'
+
 import { Buffer } from 'buffer'
 import {
   chain,
@@ -14,10 +16,9 @@ import {
   configureChains
 } from 'wagmi'
 
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { TrezorWalletConnector } from './trezor-wagmi-connector'
 
 // Pick chains
 import { alchemyProvider } from 'wagmi/providers/alchemy'
@@ -37,25 +38,16 @@ const wagmiClient = createClient({
   autoConnect: true,
   connectors: [
     new MetaMaskConnector({ chains }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: 'Caramel'
-      }
-    }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        qrcode: true
-      }
-    }),
     new InjectedConnector({
       chains,
       options: {
         name: 'Injected',
         shimDisconnect: true
       }
-    })
+    }),
+    //new TrezorWalletConnector({
+    //  chains
+    //})
   ],
   provider
 })
@@ -64,9 +56,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
   <React.StrictMode>
-    <WagmiConfig client={wagmiClient}>
-      <App />
-    </WagmiConfig>
+    <ArweaveWalletProvider>
+      <WagmiConfig client={wagmiClient}>
+        <App />
+      </WagmiConfig>
+    </ArweaveWalletProvider>
   </React.StrictMode>
 )
 

@@ -8,7 +8,7 @@ export const getContentURL = (key, mirror = 'pinata') =>
   `${gateways[mirror]}/${key}`
 
 // Infura
-const uploadFile = async ({ content, name, type }) => {
+export const uploadFile = async ({ content, name, type }) => {
   let username = process.env.REACT_APP_INFURA_USERNAME
   let secret = process.env.REACT_APP_INFURA_SECRET
   let url = 'https://ipfs.infura.io:5001/api/v0/add'
@@ -24,6 +24,22 @@ const uploadFile = async ({ content, name, type }) => {
       Authorization: `Basic ${btoa(username + ':' + secret)}`
     },
     body: formData
+  })
+
+  return result.json()
+}
+
+export const uploadContent = async (content) => {
+  let username = process.env.REACT_APP_INFURA_USERNAME
+  let secret = process.env.REACT_APP_INFURA_SECRET
+  let url = 'https://ipfs.infura.io:5001/api/v0/add'
+
+  let result = await fetch(url, {
+    method: 'post',
+    headers: {
+      Authorization: `Basic ${btoa(username + ':' + secret)}`
+    },
+    body: content
   })
 
   return result.json()
